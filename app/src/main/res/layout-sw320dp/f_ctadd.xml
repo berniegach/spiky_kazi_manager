@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".tasks.CTAddF">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/secondary_background">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="10dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="1dp"
+                android:gravity="center">
+
+                <EditText
+                    android:id="@+id/title"
+                    android:layout_width="220dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_line"
+                    android:fontFamily="@font/arima_madurai"
+                    android:gravity="center"
+                    android:hint="Title"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textSize="14sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <EditText
+                    android:id="@+id/description"
+                    android:layout_width="220dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_line"
+                    android:fontFamily="@font/arima_madurai"
+                    android:gravity="center"
+                    android:hint="Description"
+                    android:maxLines="10"
+                    android:singleLine="false"
+                    android:textSize="14sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:gravity="bottom|start"
+                android:paddingStart="16dp"
+                android:text="Start:"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:id="@+id/l_start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/start_date"
+                    android:layout_width="170dp"
+                    android:layout_height="36dp"
+                    android:background="@color/tertiary_background"
+                    android:gravity="center"
+                    android:text="10/12/2018" />
+
+                <TextView
+                    android:id="@+id/start_time"
+                    android:layout_width="170dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="1dp"
+                    android:background="@color/tertiary_background"
+                    android:gravity="center"
+                    android:text="1:14 pm" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:gravity="bottom|start"
+                android:paddingStart="16dp"
+                android:text="End:"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:id="@+id/l_end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/end_date"
+                    android:layout_width="170dp"
+                    android:layout_height="36dp"
+                    android:background="@color/tertiary_background"
+                    android:gravity="center"
+                    android:text="10/12/2018" />
+
+                <TextView
+                    android:id="@+id/end_time"
+                    android:layout_width="170dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="1dp"
+                    android:background="@color/tertiary_background"
+                    android:gravity="center"
+                    android:text="1:14 pm" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:gravity="bottom|start"
+                android:paddingStart="16dp"
+                android:text="Repeatition:"
+                android:textSize="15sp" />
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="340dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/tertiary_background" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:gravity="bottom|start"
+                android:paddingStart="16dp"
+                android:text="Location:"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/location"
+                android:layout_width="340dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/tertiary_background"
+                android:gravity="center"
+                android:text="Set Location" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginBottom="1dp"
+                android:gravity="bottom|start"
+                android:paddingStart="16dp"
+                android:text="Position:"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/position"
+                    android:layout_width="340dp"
+                    android:layout_height="36dp"
+                    android:background="@color/tertiary_background"
+                    android:gravity="center"
+                    android:text="Position" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/add_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="250dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/login_button_rounded"
+                android:fontFamily="@font/amita"
+                android:gravity="center"
+                android:text="Add"
+                android:textColor="@color/text"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </ScrollView>
+
+
+</FrameLayout>

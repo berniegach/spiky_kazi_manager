@@ -1,0 +1,7 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:key="equipment"
+         android:title="Equipments"
+        android:summary="Do you plan on adding equipments information to your profile"
+        android:defaultValue="true"/>
+</PreferenceScreen>
