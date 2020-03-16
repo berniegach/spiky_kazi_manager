@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.spikingacacia.kazi.JSONParser;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import com.spikingacacia.kazi.compliance.CCEUsersContent.Item;
 import com.spikingacacia.kazi.compliance.CCEUsersF.OnListFragmentInteractionListener;
@@ -31,6 +32,7 @@ public class CCEUsersRecyclerViewAdapter extends RecyclerView.Adapter<CCEUsersRe
     private List<Item>itemsCopy;
     private final OnListFragmentInteractionListener mListener;
     private final Context mContext;
+    private Preferences preferences;
 
 
     public CCEUsersRecyclerViewAdapter(List<Item> items, OnListFragmentInteractionListener listener, Context context)
@@ -41,6 +43,8 @@ public class CCEUsersRecyclerViewAdapter extends RecyclerView.Adapter<CCEUsersRe
         itemsCopy.addAll(items);
         mContext=context;
         jsonParser=new JSONParser();
+        //preference
+        preferences=new Preferences(context);
     }
 
     @Override
@@ -58,6 +62,10 @@ public class CCEUsersRecyclerViewAdapter extends RecyclerView.Adapter<CCEUsersRe
         holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);
         holder.mWhichView.setText(mValues.get(position).which);
+        if(!preferences.isDark_theme_enabled())
+        {
+            holder.mView.setBackgroundColor(mContext.getResources().getColor(R.color.secondary_background_light));
+        }
         holder.mWhichView.setBackgroundColor(mValues.get(position).which.contentEquals("C")?ContextCompat.getColor(mContext,R.color.graph_14):ContextCompat.getColor(mContext,R.color.graph_13));
         holder.mWhichView.setTextColor(mValues.get(position).which.contentEquals("C")?ContextCompat.getColor(mContext,R.color.graph_14):ContextCompat.getColor(mContext,R.color.graph_13));
         holder.mView.setOnClickListener(new View.OnClickListener()

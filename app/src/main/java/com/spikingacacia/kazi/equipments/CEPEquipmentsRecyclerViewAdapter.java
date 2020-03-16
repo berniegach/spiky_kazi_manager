@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.spikingacacia.kazi.JSONParser;
 import com.spikingacacia.kazi.LoginActivity;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -49,6 +50,7 @@ public class CEPEquipmentsRecyclerViewAdapter extends RecyclerView.Adapter<CEPEq
     private List<CEPEquipmentsFContent.Item>itemsCopy;
     private final CEPEquipmentsF.OnListFragmentInteractionListener mListener;
     private final Context mContext;
+    private Preferences preferences;
 
 
     public CEPEquipmentsRecyclerViewAdapter(List<CEPEquipmentsFContent.Item> items, CEPEquipmentsF.OnListFragmentInteractionListener listener, Context context)
@@ -59,6 +61,8 @@ public class CEPEquipmentsRecyclerViewAdapter extends RecyclerView.Adapter<CEPEq
         itemsCopy.addAll(items);
         mContext=context;
         jsonParser=new JSONParser();
+        //preference
+        preferences=new Preferences(context);
     }
 
     @Override
@@ -76,7 +80,10 @@ public class CEPEquipmentsRecyclerViewAdapter extends RecyclerView.Adapter<CEPEq
         holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);
         holder.mCountView.setText(mValues.get(position).count);
-
+        if(!preferences.isDark_theme_enabled())
+        {
+            holder.mView.setBackgroundColor(mContext.getResources().getColor(R.color.secondary_background_light));
+        }
         holder.mView.setOnClickListener(new View.OnClickListener()
         {
             @Override

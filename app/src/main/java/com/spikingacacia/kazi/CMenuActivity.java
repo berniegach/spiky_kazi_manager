@@ -4,7 +4,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -34,7 +39,7 @@ import static com.spikingacacia.kazi.LoginActivity.loginProgress;
 public class CMenuActivity extends AppCompatActivity
     implements CMenuFragment.OnFragmentInteractionListener
 {
-    private SharedPreferences loginPreferences;
+    private  Preferences preferences;
     private boolean showEquipments=true;
     private boolean runRate=true;
     @Override
@@ -55,8 +60,24 @@ public class CMenuActivity extends AppCompatActivity
         FragmentTransaction transaction=getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.base,fragment,"menu");
         transaction.commit();
-        loginPreferences=getBaseContext().getSharedPreferences("loginPrefs",MODE_PRIVATE);
-        showEquipments=loginPreferences.getBoolean("equipments",true);
+        preferences=new Preferences(getBaseContext());
+        showEquipments=preferences.isShow_equipments();
+        if(!preferences.isDark_theme_enabled())
+        {
+            setTheme(R.style.AppThemeLight);
+            findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            findViewById(R.id.sec_main).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+            collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.text_light));
+            collapsingToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.text_light));
+            collapsingToolbarLayout.setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            ((TextView)findViewById(R.id.who)).setTextColor(getResources().getColor(R.color.text_light));
+            ((TextView)findViewById(R.id.trial)).setTextColor(getResources().getColor(R.color.text_light));
+            ((TextView)findViewById(R.id.welcome)).setTextColor(getResources().getColor(R.color.text_light));
+            toolbar.setTitleTextColor(getResources().getColor(R.color.text_light));
+            toolbar.setPopupTheme(R.style.AppThemeLight_PopupOverlayLight);
+            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
+            appBarLayout.getContext().setTheme(R.style.AppThemeLight_AppBarOverlayLight);
+        }
     }
 
     @Override
@@ -68,7 +89,7 @@ public class CMenuActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
-        showEquipments=loginPreferences.getBoolean("equipments",true);
+        showEquipments=preferences.isShow_equipments();
         //set the welcome text
         //we set it in onResume to factor in the possibility of the username changing in the settings
         if(LoginActivity.contractorAccount.getUsername().length()<2 || LoginActivity.contractorAccount.getUsername().contentEquals("null"))
@@ -299,6 +320,23 @@ public class CMenuActivity extends AppCompatActivity
                 }).create().show();
 
 
+    }
+    @Override
+    public void play_notification()
+    {
+        Uri alarmSound =
+                RingtoneManager. getDefaultUri (RingtoneManager. TYPE_NOTIFICATION );
+        MediaPlayer mp = MediaPlayer. create (getBaseContext(), alarmSound);
+        mp.start();
+       /* NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(SMenuA.this, default_notification_channel_id )
+                        .setSmallIcon(R.mipmap.ic_launcher )
+                        .setContentTitle( "New Order" )
+                        .setContentText( "a new order has arrived" ) ;
+        NotificationManager mNotificationManager = (NotificationManager)
+                getSystemService(Context. NOTIFICATION_SERVICE );
+        mNotificationManager.notify(( int ) System. currentTimeMillis () ,
+                mBuilder.build());*/
     }
     private void checkFields()
     {

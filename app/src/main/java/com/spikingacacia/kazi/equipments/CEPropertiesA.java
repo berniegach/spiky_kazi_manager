@@ -3,6 +3,7 @@ package com.spikingacacia.kazi.equipments;
 
 import androidx.legacy.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.PagerTabStrip;
 import androidx.viewpager.widget.ViewPager;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -11,6 +12,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 public class CEPropertiesA extends AppCompatActivity
     implements CEPEquipmentsF.OnListFragmentInteractionListener,
@@ -31,12 +34,14 @@ public class CEPropertiesA extends AppCompatActivity
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private Preferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_ceproperties);
+        preferences=new Preferences(getBaseContext());
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -48,7 +53,18 @@ public class CEPropertiesA extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Equipments");
-
+        if(!preferences.isDark_theme_enabled())
+        {
+            setTheme(R.style.AppThemeLight_NoActionBarLight);
+            toolbar.setTitleTextColor(getResources().getColor(R.color.text_light));
+            toolbar.setPopupTheme(R.style.AppThemeLight_PopupOverlayLight);
+            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
+            appBarLayout.getContext().setTheme(R.style.AppThemeLight_AppBarOverlayLight);
+            appBarLayout.setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            PagerTabStrip pagerTabStrip=findViewById(R.id.pager_tab_strip);
+            pagerTabStrip.setTextColor(getResources().getColor(R.color.text_light));
+        }
     }
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

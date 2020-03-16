@@ -6,6 +6,8 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -27,6 +29,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
 import com.spikingacacia.kazi.LoginActivity;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,11 +45,14 @@ public class CUProfileA extends AppCompatActivity
     private String[]userInfo;
     final private String[]userData=new String[9];
     final private List<String[]>userDataList=new ArrayList<>();
+    private Preferences preferences;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_cuprofile);
+        preferences= new Preferences(getBaseContext());
+
         Intent intent=getIntent();
         userInfo=intent.getStringArrayExtra("item");
         //set the toolbar
@@ -57,6 +63,7 @@ public class CUProfileA extends AppCompatActivity
         collapsingToolbarLayout.setExpandedTitleTypeface(tf);
         setSupportActionBar(toolbar);
         setTitle("Profile");
+
         //layouts
         final LinearLayout l_general=findViewById(R.id.general);
         final LinearLayout l_skills=findViewById(R.id.skills);
@@ -68,6 +75,24 @@ public class CUProfileA extends AppCompatActivity
         final LinearLayout l_equipments_base=findViewById(R.id.equipments_base);
         final LinearLayout l_tasks_base=findViewById(R.id.tasks_base);
         final LinearLayout l_feedback_base=findViewById(R.id.feedback_base);
+        if(!preferences.isDark_theme_enabled())
+        {
+            setTheme(R.style.AppThemeLight_NoActionBarLight);
+            toolbar.setTitleTextColor(getResources().getColor(R.color.text_light));
+            toolbar.setPopupTheme(R.style.AppThemeLight_PopupOverlayLight);
+            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
+            appBarLayout.getContext().setTheme(R.style.AppThemeLight_AppBarOverlayLight);
+            appBarLayout.setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            findViewById(R.id.sec_main).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+            ((TextView)findViewById(R.id.who)).setTextColor(getResources().getColor(R.color.text_light));
+            //layouts
+            l_general.setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            l_skills.setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            l_equipments.setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            l_tasks.setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            l_feedback.setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+        }
         l_general.setOnClickListener(new View.OnClickListener()
         {
             @Override

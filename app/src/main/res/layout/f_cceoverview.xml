@@ -15,6 +15,7 @@
         android:showDividers="middle">
 
         <LinearLayout
+            android:id="@+id/chart_back"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/secondary_background"
@@ -23,12 +24,13 @@
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/chart"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="350dp"
                 android:layout_marginTop="60dp" />
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/fields"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
@@ -46,15 +48,13 @@
                 <TextView
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
-                    android:text="Total"
-                    android:textColor="@color/text" />
+                    android:text="Total" />
 
                 <TextView
                     android:id="@+id/tCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textColor="@color/text" />
+                    android:text="0" />
 
             </LinearLayout>
 
@@ -66,15 +66,13 @@
                 <TextView
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
-                    android:text="Compliant"
-                    android:textColor="@color/text" />
+                    android:text="Compliant" />
 
                 <TextView
                     android:id="@+id/cCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textColor="@color/text" />
+                    android:text="0" />
 
             </LinearLayout>
 
@@ -86,15 +84,13 @@
                 <TextView
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
-                    android:text="Non Compliant"
-                    android:textColor="@color/text" />
+                    android:text="Non Compliant" />
 
                 <TextView
                     android:id="@+id/ncCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textColor="@color/text" />
+                    android:text="0" />
 
             </LinearLayout>
         </LinearLayout>

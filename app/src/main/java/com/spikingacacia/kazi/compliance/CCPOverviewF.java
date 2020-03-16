@@ -5,19 +5,30 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.res.ResourcesCompat;
+
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.spikingacacia.kazi.LoginActivity;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,7 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 
-public class CCPOverviewF extends Fragment
+public class CCPOverviewF extends Fragment implements OnChartValueSelectedListener
 {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,9 +48,11 @@ public class CCPOverviewF extends Fragment
     private String mPositionId;
     private int complaint=0;
     private int nonCompliant=0;
+    private Preferences preferences;
 
     //private OnFragmentInteractionListener mListener;
     private Typeface font;
+    private PieChart chart;
 
     public CCPOverviewF()
     {
@@ -69,6 +82,7 @@ public class CCPOverviewF extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         if (getArguments() != null)
         {
             mPositionName = getArguments().getString(ARG_PARAM1);
@@ -89,6 +103,7 @@ public class CCPOverviewF extends Fragment
     {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.f_ccpoverview, container, false);
+        preferences=new Preferences(getContext());
         //textviews
         TextView tCount=view.findViewById(R.id.tCount);
         TextView cCount=view.findViewById(R.id.cCount);
@@ -105,60 +120,121 @@ public class CCPOverviewF extends Fragment
         //font
         font= ResourcesCompat.getFont(getContext(),R.font.arima_madurai);
         //chart
-        final PieChart chart=view.findViewById(R.id.chart);
+        chart=view.findViewById(R.id.chart);
         setPieChart(chart);
         setCompliacePie(chart);
+        if(!preferences.isDark_theme_enabled())
+        {
+            view.findViewById(R.id.fields).setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            view.findViewById(R.id.fields_2).setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            view.findViewById(R.id.chart_back).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+        }
         return view;
     }
-    private void setPieChart(PieChart pieChart)
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
-        pieChart.setUsePercentValues(true);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.setExtraOffsets(5,10,5,5);
-        pieChart.setDragDecelerationFrictionCoef(0.95f);
-        pieChart.setDrawHoleEnabled(false);
-       // pieChart.setHoleColor(Color.TRANSPARENT);
-        pieChart.setTransparentCircleColor(Color.WHITE);
-        pieChart.setTransparentCircleAlpha(110);
-        //pieChart.setHoleRadius(95f);
-        pieChart.setRotationAngle(0);
-        pieChart.setRotationEnabled(true);
-        pieChart.setHighlightPerTapEnabled(true);
-        pieChart.setEntryLabelColor(Color.WHITE);
-       // pieChart.setEntryLabelTypeface(getResources().getFont(R.font.arima_madurai));
+        super.onCreateOptionsMenu(menu, inflater);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.pie, menu);
 
-        Legend legend=pieChart.getLegend();
-        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
-        legend.setDrawInside(false);
-        legend.setXEntrySpace(7f);
-        legend.setYEntrySpace(0f);
-        legend.setYOffset(0f);
-        legend.setTextSize(13);
-        legend.setTextColor(Color.WHITE);
-        legend.setTypeface(font);
-        //entry label
-        pieChart.setEntryLabelColor(Color.WHITE);
-        pieChart.setEntryLabelTypeface(font);
-        pieChart.setEntryLabelTextSize(12);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-        pieChart.invalidate();
+        switch (item.getItemId()) {
+
+            case R.id.actionToggleValues: {
+                for (IDataSet<?> set : chart.getData().getDataSets())
+                    set.setDrawValues(!set.isDrawValuesEnabled());
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+            }
+            case R.id.actionToggleHole: {
+                if (chart.isDrawHoleEnabled())
+                    chart.setDrawHoleEnabled(false);
+                else
+                    chart.setDrawHoleEnabled(true);
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+            }
+            case R.id.actionTogglePercent:
+                chart.setUsePercentValues(!chart.isUsePercentValuesEnabled());
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+        }
+        return true;
+    }
+    private void setPieChart(PieChart chart)
+    {
+        if(preferences.isDark_theme_enabled())
+            chart.setBackgroundColor(Color.BLACK);
+        else
+            chart.setBackgroundColor(Color.WHITE);
+        chart.setUsePercentValues(true);
+        chart.getDescription().setEnabled(false);
+        chart.setExtraOffsets(5, 10, 5, 5);
+
+        chart.setDragDecelerationFrictionCoef(0.95f);
+
+        //chart.setCenterTextTypeface(tfLight);
+        // chart.setCenterText(generateCenterSpannableText());
+
+        chart.setDrawHoleEnabled(true);
+        chart.setHoleColor(Color.WHITE);
+
+        chart.setTransparentCircleColor(Color.WHITE);
+        chart.setTransparentCircleAlpha(110);
+
+        chart.setHoleRadius(58f);
+        chart.setTransparentCircleRadius(61f);
+
+        chart.setDrawCenterText(true);
+
+        chart.setRotationAngle(0);
+        // enable rotation of the chart by touch
+        chart.setRotationEnabled(true);
+        chart.setHighlightPerTapEnabled(true);
+
+        // chart.setUnit(" €");
+        // chart.setDrawUnitsInChart(true);
+
+        // add a selection listener
+        chart.setOnChartValueSelectedListener(this);
+
+        chart.animateY(1400, Easing.EaseInOutQuad);
+        // chart.spin(2000, 0, 360);
+
+        Legend l = chart.getLegend();
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        l.setOrientation(Legend.LegendOrientation.VERTICAL);
+        l.setDrawInside(false);
+        l.setXEntrySpace(7f);
+        l.setYEntrySpace(0f);
+        l.setYOffset(0f);
+
+        // entry label styling
+        if(preferences.isDark_theme_enabled())
+            chart.setEntryLabelColor(Color.WHITE);
+        else
+            chart.setEntryLabelColor(Color.BLACK);
+        //chart.setEntryLabelTypeface(tfRegular);
+        chart.setEntryLabelTextSize(12f);
 
     }
     private void setCompliacePie(PieChart pieChart)
     {
         List<PieEntry>entries=new ArrayList<>();
-        //colors
-        List<Integer>colors=new ArrayList<>();
-        List<Integer>tempColors=new ArrayList<>();
         //all
 
         if(complaint==0 && nonCompliant==0)
         {
             entries.add(new PieEntry(1,"Empty"));
-            colors=ColorTemplate.createColors(getResources(),new int[]{R.color.graph_1});
         }
         else
         {
@@ -166,34 +242,61 @@ public class CCPOverviewF extends Fragment
             {
                 int count=LoginActivity.cGlobalInfo.getCompliant();
                 entries.add(new PieEntry(count,count>0?"Compliant":""));
-                tempColors.add(R.color.graph_14);
-                //ColorTemplate.createColors(getResources(),new int[]{R.color.a_mono3});
             }
             if(nonCompliant>0)
             {
                 int count=LoginActivity.cGlobalInfo.getNoncompliant();
                 entries.add(new PieEntry(count,count>0?"Non Compliant":""));
-                tempColors.add(R.color.graph_13);
-                //ColorTemplate.createColors(getResources(),new int[]{R.color.a_mono3});
             }
-            int[]tempTempColors=new int[tempColors.size()];
-            for(int count=0; count<tempColors.size(); count+=1 )
-                tempTempColors[count]=tempColors.get(count);
-            colors=ColorTemplate.createColors(getResources(),tempTempColors);
 
         }
 
-        PieDataSet set=new PieDataSet(entries,"Compliance");
-        set.setSliceSpace(0f);
-        //colors
-        set.setColors(colors);
-        PieData data=new PieData(set);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTypeface(font);
-        data.setValueFormatter(new PercentFormatter());
-        pieChart.setData(data);
-        pieChart.highlightValues(null);
-        pieChart.invalidate();
+        // NOTE: The order of the entries when being added to the entries array determines their position around the center of
+        // the chart.
+
+        PieDataSet dataSet = new PieDataSet(entries, "Compliance");
+
+        dataSet.setDrawIcons(false);
+
+        dataSet.setSliceSpace(0f);
+        //dataSet.setIconsOffset(new MPPointF(0, 40));
+        dataSet.setSelectionShift(5f);
+
+        // add a lot of colors
+
+        ArrayList<Integer> colors = new ArrayList<>();
+        for (int c : ColorTemplate.PASTEL_COLORS)
+            colors.add(c);
+        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.JOYFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.COLORFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.LIBERTY_COLORS)
+            colors.add(c);
+
+
+
+        colors.add(ColorTemplate.getHoloBlue());
+
+        dataSet.setColors(colors);
+        //dataSet.setSelectionShift(0f);
+
+        PieData data = new PieData(dataSet);
+        data.setValueFormatter(new PercentFormatter(chart));
+        data.setValueTextSize(11f);
+        //data.setValueTextColor(Color.BLUE);
+        //data.setValueTypeface(tfLight);
+        chart.setData(data);
+
+        // undo all highlights
+        chart.highlightValues(null);
+
+        chart.invalidate();
 
     }
     private void countComplaint()
@@ -236,32 +339,18 @@ public class CCPOverviewF extends Fragment
             }
         }
     }
-    /*
     @Override
-    public void onAttach(Context context)
-    {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener)
-        {
-            mListener = (OnFragmentInteractionListener) context;
-        } else
-        {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+    public void onValueSelected(Entry e, Highlight h) {
+
+        if (e == null)
+            return;
+        Log.i("VAL SELECTED",
+                "Value: " + e.getY() + ", index: " + h.getX()
+                        + ", DataSet index: " + h.getDataSetIndex());
     }
 
     @Override
-    public void onDetach()
-    {
-        super.onDetach();
-        mListener = null;
+    public void onNothingSelected() {
+        Log.i("PieChart", "nothing selected");
     }
-
-
-    public interface OnFragmentInteractionListener
-    {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    } */
 }

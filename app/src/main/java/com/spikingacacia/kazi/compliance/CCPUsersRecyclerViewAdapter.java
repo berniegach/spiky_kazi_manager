@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.spikingacacia.kazi.JSONParser;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import com.spikingacacia.kazi.compliance.CCPUsersF.OnListFragmentInteractionListener;
 import com.spikingacacia.kazi.compliance.CCPUsersContent.Item;
@@ -31,6 +32,7 @@ public class CCPUsersRecyclerViewAdapter extends RecyclerView.Adapter<CCPUsersRe
     private List<Item>itemsCopy;
     private final OnListFragmentInteractionListener mListener;
     private final Context mContext;
+    private Preferences preferences;
 
 
     public CCPUsersRecyclerViewAdapter(List<Item> items, OnListFragmentInteractionListener listener, Context context)
@@ -41,6 +43,8 @@ public class CCPUsersRecyclerViewAdapter extends RecyclerView.Adapter<CCPUsersRe
         itemsCopy.addAll(items);
         mContext=context;
         jsonParser=new JSONParser();
+        //preference
+        preferences=new Preferences(context);
     }
 
     @Override
@@ -54,6 +58,10 @@ public class CCPUsersRecyclerViewAdapter extends RecyclerView.Adapter<CCPUsersRe
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position)
     {
+        if(!preferences.isDark_theme_enabled())
+        {
+            holder.mView.setBackgroundColor(mContext.getResources().getColor(R.color.secondary_background_light));
+        }
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);

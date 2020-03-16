@@ -66,6 +66,7 @@ public class CMenuFragment extends Fragment
     private int reviewsCount=0;
 
     private OnFragmentInteractionListener mListener;
+    private Preferences preferences;
 
     public CMenuFragment()
     {
@@ -110,6 +111,8 @@ public class CMenuFragment extends Fragment
     {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.f_cmenu, container, false);
+        //preference
+        preferences=new Preferences(getContext());
         tMessagesCount=view.findViewById(R.id.messages_count);
         tTasksCount=view.findViewById(R.id.tasks_count);
         tReviewsCount=view.findViewById(R.id.reviews_count);
@@ -211,18 +214,24 @@ public class CMenuFragment extends Fragment
             {
                 if(messagesCount!=cNotificationsList.size())
                 {
+                    if(mListener!=null)
+                        mListener.play_notification();
                     messagesCount=cNotificationsList.size();
                     tMessagesCount.setText(String.valueOf(messagesCount));
                     Log.d(TAG,"messages count changed");
                 }
                 if(tasksCount!=getTasksCount())
                 {
+                    if(mListener!=null)
+                        mListener.play_notification();
                     tasksCount=getTasksCount();
                     tTasksCount.setText(String.valueOf(tasksCount));
                     Log.d(TAG,"tasks count changed");
                 }
                 if(reviewsCount!=getReviewsCount())
                 {
+                    if(mListener!=null)
+                        mListener.play_notification();
                     reviewsCount=getReviewsCount();
                     tReviewsCount.setText(String.valueOf(reviewsCount));
                     Log.d(TAG,"reviews count changed");
@@ -252,6 +261,16 @@ public class CMenuFragment extends Fragment
             }
         };
         thread.start();
+        if(!preferences.isDark_theme_enabled())
+        {
+            view.findViewById(R.id.requirements).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+            view.findViewById(R.id.compliance).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+            view.findViewById(R.id.reports).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+            view.findViewById(R.id.tasks).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+            view.findViewById(R.id.messages).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+            view.findViewById(R.id.performance).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+            view.findViewById(R.id.settings).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+        }
         return view;
     }
     @Override
@@ -308,6 +327,7 @@ public class CMenuFragment extends Fragment
     {
         void onMenuClicked(int id);
         void onLogOut();
+        void play_notification();
     }
     private int getTasksCount()
     {

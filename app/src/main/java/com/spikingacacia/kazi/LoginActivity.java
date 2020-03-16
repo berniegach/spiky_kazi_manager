@@ -5,12 +5,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -19,11 +21,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.billingclient.api.BillingClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.spikingacacia.kazi.billing.BillingManager;
@@ -126,17 +131,31 @@ CreateAccountF.OnFragmentInteractionListener,
     private AcquireFragment mAcquireFragment;
     private MainViewController mViewController;
 
-    private SharedPreferences loginPreferences;
-    private SharedPreferences.Editor loginPreferencesEditor;
+    private Preferences preferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_login);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        CollapsingToolbarLayout collapsingToolbarLayout=findViewById(R.id.collapsingToolbar);
+        final Typeface tf= ResourcesCompat.getFont(this,R.font.amita);
+        collapsingToolbarLayout.setCollapsedTitleTypeface(tf);
+        collapsingToolbarLayout.setExpandedTitleTypeface(tf);
         setSupportActionBar(toolbar);
         //preference
-        loginPreferences=getBaseContext().getSharedPreferences("loginPrefs",MODE_PRIVATE);
-        loginPreferencesEditor=loginPreferences.edit();
+        preferences=new Preferences(getBaseContext());
+        //dark theme prefernce
+        View main_view=findViewById(R.id.main);
+        if(!preferences.isDark_theme_enabled())
+        {
+            setTheme(R.style.AppThemeLight);
+            main_view.setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            findViewById(R.id.sec_main).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+            ((TextView)findViewById(R.id.who)).setTextColor(getResources().getColor(R.color.text_light));
+            collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.text_light));
+            collapsingToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.text_light));
+            collapsingToolbarLayout.setBackgroundColor(getResources().getColor(R.color.main_background_light));
+        }
         //background intent
         intentLoginProgress=new Intent(LoginActivity.this,ProgressView.class);
         loginProgress=0;
@@ -156,7 +175,7 @@ CreateAccountF.OnFragmentInteractionListener,
         //global variables
         jsonParser=new JSONParser();
         //firebase links
-        if((loginPreferences.getBoolean("verify",false)==true) || (loginPreferences.getBoolean("reset_password",false)==true))
+        if(preferences.isVerify_email() || preferences.isReset_password())
         {
             Toast.makeText(getBaseContext(),"Please wait",Toast.LENGTH_SHORT).show();
             FirebaseDynamicLinks.getInstance()
@@ -169,19 +188,19 @@ CreateAccountF.OnFragmentInteractionListener,
                             if (pendingDynamicLinkData != null)
                             {
                                 deepLink = pendingDynamicLinkData.getLink();
-                                if(loginPreferences.getBoolean("verify",false)==true)
+                                if( preferences.isVerify_email())
                                 {
                                     setTitle("Sign Up");
-                                    Fragment fragment=CreateAccountF.newInstance(1,loginPreferences.getString("email_verify",""));
+                                    Fragment fragment=CreateAccountF.newInstance(1,preferences.getEmail_to_verify());
                                     FragmentTransaction transaction=getSupportFragmentManager().beginTransaction();
                                     transaction.replace(R.id.loginbase,fragment,"createnewaccount");
                                     transaction.addToBackStack("createaccount");
                                     transaction.commit();
                                 }
-                                else if(loginPreferences.getBoolean("reset_password",false)==true)
+                                else if(preferences.isReset_password())
                                 {
                                     setTitle("Reset Password");
-                                    Fragment fragment=CreateAccountF.newInstance(2,loginPreferences.getString("email_reset_password",""));
+                                    Fragment fragment=CreateAccountF.newInstance(2,preferences.getEmail_to_reset_password());
                                     FragmentTransaction transaction=getSupportFragmentManager().beginTransaction();
                                     transaction.replace(R.id.loginbase,fragment,"createnewaccount");
                                     transaction.addToBackStack("createaccount");

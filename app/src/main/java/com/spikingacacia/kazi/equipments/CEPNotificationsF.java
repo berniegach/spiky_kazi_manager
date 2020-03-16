@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.spikingacacia.kazi.CommonHelper;
 import com.spikingacacia.kazi.JSONParser;
 import com.spikingacacia.kazi.LoginActivity;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -48,6 +49,7 @@ public class CEPNotificationsF extends Fragment
     private String TAG_MESSAGE="message";
     private boolean[][]tempNotis;
     private float textViewPadding=16;
+    private Preferences preferences;
 
     public CEPNotificationsF()
     {
@@ -81,6 +83,7 @@ public class CEPNotificationsF extends Fragment
     {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.f_cepnotifications, container, false);
+        preferences=new Preferences(getContext());
         ((Button)view.findViewById(R.id.update_button)).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -218,7 +221,10 @@ public class CEPNotificationsF extends Fragment
             LinearLayout equipLayout = new LinearLayout(getContext());
             equipLayout.setOrientation(LinearLayout.HORIZONTAL);
             equipLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            equipLayout.setBackgroundColor(ContextCompat.getColor(getContext(),R.color.secondary_background));
+            if(preferences.isDark_theme_enabled())
+                equipLayout.setBackgroundColor(ContextCompat.getColor(getContext(),R.color.secondary_background));
+            else
+                equipLayout.setBackgroundColor(ContextCompat.getColor(getContext(),R.color.secondary_background_light));
             //equipLayout.setPadding(10,10,10,10);
             equipLayout.setOnClickListener(new View.OnClickListener()
             {
@@ -282,7 +288,10 @@ public class CEPNotificationsF extends Fragment
                 final LinearLayout qualiLayout = new LinearLayout(getContext());
                 qualiLayout.setOrientation(LinearLayout.HORIZONTAL);
                 qualiLayout.setLayoutParams(layoutParams3);
-                qualiLayout.setBackgroundColor(ContextCompat.getColor(getContext(),R.color.tertiary_background));
+                if(preferences.isDark_theme_enabled())
+                    qualiLayout.setBackgroundColor(ContextCompat.getColor(getContext(),R.color.tertiary_background));
+                else
+                    qualiLayout.setBackgroundColor(ContextCompat.getColor(getContext(),R.color.tertiary_background_light));
                // qualiLayout.setPadding(10,10,10,10);
                 //item number textview
                 TextView textCount2=new TextView(getContext());
@@ -376,7 +385,10 @@ public class CEPNotificationsF extends Fragment
         final LinearLayout qualiLayout = new LinearLayout(getContext());
         qualiLayout.setOrientation(LinearLayout.HORIZONTAL);
         qualiLayout.setLayoutParams(layoutParams3);
-        qualiLayout.setBackgroundColor(ContextCompat.getColor(getContext(),R.color.tertiary_background));
+        if(preferences.isDark_theme_enabled())
+            qualiLayout.setBackgroundColor(ContextCompat.getColor(getContext(),R.color.tertiary_background));
+        else
+            qualiLayout.setBackgroundColor(ContextCompat.getColor(getContext(),R.color.tertiary_background_light));
         qualiLayout.setPadding(10,10,10,10);
         //item number textview
         TextView textCount2=new TextView(getContext());

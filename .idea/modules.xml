@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/kazi.iml" filepath="$PROJECT_DIR$/kazi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="kazi/app" />
+      <module fileurl="file://$PROJECT_DIR$/kazi.iml" filepath="$PROJECT_DIR$/kazi.iml" group="kazi" />
     </modules>
   </component>
 </project>

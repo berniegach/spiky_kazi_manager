@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.spikingacacia.kazi.JSONParser;
 import com.spikingacacia.kazi.LoginActivity;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import com.spikingacacia.kazi.requirements.CRSQualiF.OnListFragmentInteractionListener;
 import com.spikingacacia.kazi.requirements.CRSQualiFContent.Item;
@@ -47,6 +48,7 @@ public class CRSQualiRecyclerViewAdapter extends RecyclerView.Adapter<CRSQualiRe
     private List<Item>itemsCopy;
     private final OnListFragmentInteractionListener mListener;
     private final Context mContext;
+    private Preferences preferences;
 
 
     public CRSQualiRecyclerViewAdapter(List<Item> items, OnListFragmentInteractionListener listener, Context context)
@@ -57,6 +59,8 @@ public class CRSQualiRecyclerViewAdapter extends RecyclerView.Adapter<CRSQualiRe
         itemsCopy.addAll(items);
         mContext=context;
         jsonParser=new JSONParser();
+        //preference
+        preferences=new Preferences(context);
     }
 
     @Override
@@ -74,7 +78,10 @@ public class CRSQualiRecyclerViewAdapter extends RecyclerView.Adapter<CRSQualiRe
         holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);
        // holder.mCountView.setText(mValues.get(position).count);
-
+        if(!preferences.isDark_theme_enabled())
+        {
+            holder.mView.setBackgroundColor(mContext.getResources().getColor(R.color.secondary_background_light));
+        }
         holder.mView.setOnClickListener(new View.OnClickListener()
         {
             @Override

@@ -14,6 +14,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+
+import androidx.appcompat.widget.Toolbar;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -75,14 +77,24 @@ public class CSettingsActivity extends AppCompatActivity
     public static ContractorAccount tempContractorAccount;
     public static String permissions;
     public static Bitmap profilePic;
-    private static  SharedPreferences loginPreferences;
-    private static SharedPreferences.Editor loginPreferencesEditor;
+    Preferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+        //preference
+        preferences = new Preferences(getBaseContext());
+        if(!preferences.isDark_theme_enabled())
+        {
+            //setTheme(R.style.AppThemeLight_NoActionBarLight);
+            //toolbar.setTitleTextColor(getResources().getColor(R.color.text_light));
+            //toolbar.setPopupTheme(R.style.AppThemeLight_PopupOverlayLight);
+            //AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
+            //appBarLayout.getContext().setTheme(R.style.AppThemeLight_AppBarOverlayLight);
+            findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.main_background_light));
+        }
         if (savedInstanceState == null)
         {
             getSupportFragmentManager()
@@ -109,6 +121,14 @@ public class CSettingsActivity extends AppCompatActivity
         if (actionBar != null)
         {
             actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        //dark theme prefernce
+        if(!preferences.isDark_theme_enabled())
+        {
+            setTheme(R.style.NonFullscreenSSettingsLight);
+            Toolbar actionBarToolbar = (Toolbar)findViewById(R.id.action_bar);
+            if (actionBarToolbar != null)
+                actionBarToolbar.setTitleTextColor(getResources().getColor(R.color.text_light));
         }
         ///
         tempContractorAccount=new ContractorAccount();
@@ -144,9 +164,6 @@ public class CSettingsActivity extends AppCompatActivity
                 });
         RequestQueue request2 = Volley.newRequestQueue(getBaseContext());
         request2.add(request);
-        loginPreferences=context.getSharedPreferences("loginPrefs",MODE_PRIVATE);
-        loginPreferencesEditor=loginPreferences.edit();
-
     }
     @Override
     protected void onDestroy()
@@ -217,11 +234,12 @@ public class CSettingsActivity extends AppCompatActivity
      */
     public static class GeneralPreferenceFragment extends PreferenceFragmentCompat
     {
+        private Preferences preferences;
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey)
         {
             setPreferencesFromResource(R.xml.pref_cgeneral, rootKey);
-
+            final SwitchPreference preference_dark=findPreference("dark_theme");
             //feedback preference click listener
             EditTextPreference preference_est=findPreference("username");
             preference_est.setSummary(LoginActivity.contractorAccount.getUsername());
@@ -336,6 +354,22 @@ public class CSettingsActivity extends AppCompatActivity
                         }
                     });
                     dialog.show();
+                    return false;
+                }
+            });
+            //dark theme
+
+            //preference
+            preferences=new Preferences(context);
+            preference_dark.setChecked(preferences.isDark_theme_enabled());
+            preference_dark.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+            {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue)
+                {
+                    boolean choice = (boolean) newValue;
+                    preference_dark.setChecked(choice);
+                    preferences.setDark_theme_enabled(choice);
                     return false;
                 }
             });
@@ -698,20 +732,20 @@ public class CSettingsActivity extends AppCompatActivity
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class FeaturesPreferenceFragment extends PreferenceFragmentCompat
     {
+        private Preferences preferences;
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey)
         {
             setPreferencesFromResource(R.xml.pref_cfeatures, rootKey);
-
+            preferences=new Preferences(context);
             final SwitchPreference pref_features=(SwitchPreference)  findPreference("equipment");
-            pref_features.setChecked(loginPreferences.getBoolean("equipments",true));
+            pref_features.setChecked(preferences.isShow_equipments());
             pref_features.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
             {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue)
                 {
-                    loginPreferencesEditor.putBoolean("equipments",(boolean)newValue);
-                    loginPreferencesEditor.commit();
+                    preferences.setShow_equipments((boolean)newValue);
                     return true;
                 }
             });
