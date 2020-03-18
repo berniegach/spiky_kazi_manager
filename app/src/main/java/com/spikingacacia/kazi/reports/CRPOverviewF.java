@@ -7,6 +7,9 @@ import androidx.fragment.app.Fragment;
 import androidx.core.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -19,10 +22,14 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.spikingacacia.kazi.CommonHelper;
 import com.spikingacacia.kazi.LoginActivity;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
+import com.spikingacacia.kazi.pie_chart;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -53,6 +60,8 @@ public class CRPOverviewF extends Fragment
     private TextView pCount;
     private TextView cCount;
     private TextView ncCount;
+    private Preferences preferences;
+    private PieChart chart;
 
     public CRPOverviewF()
     {
@@ -82,6 +91,7 @@ public class CRPOverviewF extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         if (getArguments() != null)
         {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -116,6 +126,7 @@ public class CRPOverviewF extends Fragment
     {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.f_crpoverview, container, false);
+        preferences=new Preferences(getContext());
         //layouts
         l_trades=view.findViewById(R.id.l_trades);
         l_mand=view.findViewById(R.id.l_mand);
@@ -139,8 +150,8 @@ public class CRPOverviewF extends Fragment
         //font
         font= ResourcesCompat.getFont(getContext(),R.font.arima_madurai);
         //chart
-        final PieChart chart=view.findViewById(R.id.chart);
-        setPieChart(chart);
+        chart=view.findViewById(R.id.chart);
+        pie_chart.init(chart,getContext());
         setCompliacePie(chart);
         //selector textview
         final TextView selector=view.findViewById(R.id.selector);
@@ -217,44 +228,50 @@ public class CRPOverviewF extends Fragment
                 }*/
             }
         });
+        if(!preferences.isDark_theme_enabled())
+        {
+            view.findViewById(R.id.fields).setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            view.findViewById(R.id.chart_back).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+        }
         return view;
     }
-    private void setPieChart(PieChart pieChart)
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
-        pieChart.setUsePercentValues(true);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.setExtraOffsets(5,10,5,5);
-        pieChart.setDragDecelerationFrictionCoef(0.95f);
-        pieChart.setDrawHoleEnabled(false);
-        //pieChart.setHoleColor(Color.TRANSPARENT);
-        pieChart.setTransparentCircleColor(Color.WHITE);
-        pieChart.setTransparentCircleAlpha(110);
-       // pieChart.setHoleRadius(95f);
-        pieChart.setRotationAngle(0);
-        pieChart.setRotationEnabled(true);
-        pieChart.setHighlightPerTapEnabled(true);
-        pieChart.setEntryLabelColor(Color.WHITE);
-       // pieChart.setEntryLabelTypeface(getResources().getFont(R.font.arima_madurai));
+        super.onCreateOptionsMenu(menu, inflater);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.pie, menu);
 
-        Legend legend=pieChart.getLegend();
-        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
-        legend.setDrawInside(false);
-        legend.setXEntrySpace(7f);
-        legend.setYEntrySpace(0f);
-        legend.setYOffset(0f);
-        legend.setTextSize(13);
-        legend.setTextColor(Color.WHITE);
-        legend.setTypeface(font);
-        //entry label
-        pieChart.setEntryLabelColor(Color.WHITE);
-        pieChart.setEntryLabelTypeface(font);
-        pieChart.setEntryLabelTextSize(12);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-        pieChart.invalidate();
+        switch (item.getItemId()) {
 
+            case R.id.actionToggleValues: {
+                for (IDataSet<?> set : chart.getData().getDataSets())
+                    set.setDrawValues(!set.isDrawValuesEnabled());
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+            }
+            case R.id.actionToggleHole: {
+                if (chart.isDrawHoleEnabled())
+                    chart.setDrawHoleEnabled(false);
+                else
+                    chart.setDrawHoleEnabled(true);
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+            }
+            case R.id.actionTogglePercent:
+                chart.setUsePercentValues(!chart.isUsePercentValuesEnabled());
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+        }
+        return true;
     }
     private void setCompliacePie(PieChart pieChart)
     {
@@ -267,13 +284,9 @@ public class CRPOverviewF extends Fragment
         l_jobs.setVisibility(View.VISIBLE);
 
         List<PieEntry>entries=new ArrayList<>();
-        //colors
-        List<Integer>colors=new ArrayList<>();
-        List<Integer>tempColors=new ArrayList<>();
         if(LoginActivity.cGlobalInfo.getCompliant()==0 && LoginActivity.cGlobalInfo.getNoncompliant()==0)
         {
             entries.add(new PieEntry(1,"Empty"));
-            colors=ColorTemplate.createColors(getResources(),new int[]{R.color.graph_1});
         }
         else
         {
@@ -281,50 +294,14 @@ public class CRPOverviewF extends Fragment
             {
                 int count=LoginActivity.cGlobalInfo.getCompliant();
                 entries.add(new PieEntry(count,count>0?"Compliant":""));
-                tempColors.add(R.color.graph_14);
-                //ColorTemplate.createColors(getResources(),new int[]{R.color.a_mono3});
             }
             if(LoginActivity.cGlobalInfo.getNoncompliant()>0)
             {
                 int count=LoginActivity.cGlobalInfo.getNoncompliant();
                 entries.add(new PieEntry(count,count>0?"Non Compliant":""));
-                tempColors.add(R.color.graph_13);
-                //ColorTemplate.createColors(getResources(),new int[]{R.color.a_mono3});
             }
-            int[]tempTempColors=new int[tempColors.size()];
-            for(int count=0; count<tempColors.size(); count+=1 )
-                tempTempColors[count]=tempColors.get(count);
-            colors=ColorTemplate.createColors(getResources(),tempTempColors);
-
         }
-        PieDataSet set=new PieDataSet(entries,"Count");
-        set.setSliceSpace(0f);
-        //colors
-        set.setColors(colors);
-        PieData data=new PieData(set);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTypeface(font);
-        data.setValueFormatter(new PercentFormatter());
-        pieChart.setData(data);
-        pieChart.highlightValues(null);
-        pieChart.invalidate();
-        /*
-        List<PieEntry>entries=new ArrayList<>();
-        entries.add(new PieEntry(LoginActivity.cGlobalInfo.getCompliant(),"Compliant"));
-        entries.add(new PieEntry(LoginActivity.cGlobalInfo.getNoncompliant(),"Non Compliant"));
-        PieDataSet set=new PieDataSet(entries,"Compliance");
-        set.setSliceSpace(0f);
-        //colors
-        List<Integer>colors=ColorTemplate.createColors(getResources(),new int[]{R.color.a_mono2,R.color.a_comp3});
-        set.setColors(colors);
-        PieData data=new PieData(set);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTypeface(font);
-        data.setValueFormatter(new PercentFormatter());
-        pieChart.setData(data);
-        pieChart.highlightValues(null);
-        pieChart.invalidate();*/
-
+        pie_chart.add_data(entries,"Count",chart);
     }
     private void setTradesPie(PieChart pieChart, String tradeName)
     {
@@ -366,63 +343,25 @@ public class CRPOverviewF extends Fragment
         l_mand.setVisibility(View.GONE);
         l_jobs.setVisibility(View.GONE);
         //setting the piechart
-        /*
-        List<PieEntry>entries=new ArrayList<>();
-        entries.add(new PieEntry(c,"Compliant"));
-        entries.add(new PieEntry(nc,"Non Compliant"));
-        PieDataSet set=new PieDataSet(entries,"Compliance");
-        set.setSliceSpace(0f);
-        //colors
-        List<Integer>colors=ColorTemplate.createColors(getResources(),new int[]{R.color.a_mono2,R.color.a_comp3});
-        set.setColors(colors);
-        PieData data=new PieData(set);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTypeface(font);
-        data.setValueFormatter(new PercentFormatter());
-        pieChart.setData(data);
-        pieChart.highlightValues(null);
-        pieChart.invalidate();*/
 
         List<PieEntry>entries=new ArrayList<>();
-        //colors
-        List<Integer>colors=new ArrayList<>();
-        List<Integer>tempColors=new ArrayList<>();
         if(c==0 && nc==0)
         {
             entries.add(new PieEntry(1,"Empty"));
-            colors=ColorTemplate.createColors(getResources(),new int[]{R.color.graph_1});
         }
         else
         {
             if(c>0)
             {
                 entries.add(new PieEntry(c,c>0?"Compliant":""));
-                tempColors.add(R.color.graph_14);
-                //ColorTemplate.createColors(getResources(),new int[]{R.color.a_mono3});
             }
             if(nc>0)
             {
                 entries.add(new PieEntry(nc,nc>0?"Non Compliant":""));
-                tempColors.add(R.color.graph_13);
-                //ColorTemplate.createColors(getResources(),new int[]{R.color.a_mono3});
             }
-            int[]tempTempColors=new int[tempColors.size()];
-            for(int count=0; count<tempColors.size(); count+=1 )
-                tempTempColors[count]=tempColors.get(count);
-            colors=ColorTemplate.createColors(getResources(),tempTempColors);
 
         }
-        PieDataSet set=new PieDataSet(entries,"Count");
-        set.setSliceSpace(0f);
-        //colors
-        set.setColors(colors);
-        PieData data=new PieData(set);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTypeface(font);
-        data.setValueFormatter(new PercentFormatter());
-        pieChart.setData(data);
-        pieChart.highlightValues(null);
-        pieChart.invalidate();
+        pie_chart.add_data(entries,"Count",chart);
     }
     private void getFieldsCounts()
     {
@@ -444,32 +383,5 @@ public class CRPOverviewF extends Fragment
                 countQualsJ+=1;
         }
     }
-    /*
-    @Override
-    public void onAttach(Context context)
-    {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener)
-        {
-            mListener = (OnFragmentInteractionListener) context;
-        } else
-        {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
 
-    @Override
-    public void onDetach()
-    {
-        super.onDetach();
-        mListener = null;
-    }
-
-
-    public interface OnFragmentInteractionListener
-    {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    } */
 }

@@ -115,7 +115,9 @@ public class CTTaskOverviewF extends Fragment
                 ((TextView)view.findViewById(R.id.start)).setText(startings[0].replace("s","  "));
                 ((TextView)view.findViewById(R.id.end)).setText(endings[0].replace("s","  "));
                 ((TextView)view.findViewById(R.id.repetition)).setText(repetition);
-                ((TextView)view.findViewById(R.id.location)).setText(location[2]);
+                //since we added that one can add a task with no location, we need to check if its missing
+                if(location.length==3)
+                    ((TextView)view.findViewById(R.id.location)).setText(location[2]);
                 ((TextView)view.findViewById(R.id.position)).setText(position[0]);
                 ((TextView)view.findViewById(R.id.date_added)).setText(dateadded);
                 ((TextView)view.findViewById(R.id.date_changed)).setText(datechanged);

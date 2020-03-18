@@ -1,12 +1,17 @@
 package com.spikingacacia.kazi.tasks;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 
 public class CTTasksA extends AppCompatActivity
@@ -17,16 +22,28 @@ public class CTTasksA extends AppCompatActivity
 {
     private String fragmentWhich="overview";
     private int mWhichTask=0;
+    private Preferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_cttasks);
+        preferences=new Preferences(getBaseContext());
         //set actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Tasks");
+        if(!preferences.isDark_theme_enabled())
+        {
+            setTheme(R.style.AppThemeLight);
+            toolbar.setTitleTextColor(getResources().getColor(R.color.text_light));
+            toolbar.setPopupTheme(R.style.AppThemeLight_PopupOverlayLight);
+            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
+            appBarLayout.getContext().setTheme(R.style.AppThemeLight_AppBarOverlayLight);
+            appBarLayout.setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.main_background_light));
+        }
         //set the first base fragment
         Fragment fragment=CTOverviewF.newInstance("","");
         FragmentTransaction transaction=getSupportFragmentManager().beginTransaction();
@@ -45,6 +62,11 @@ public class CTTasksA extends AppCompatActivity
                     setTitle(fragmentWhich);
             }
         });
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("LOCATION", "onacty2 "+data.getStringExtra("location"));
     }
     /**implementation of CTOverview.java**/
     @Override

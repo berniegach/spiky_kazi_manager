@@ -50,17 +50,18 @@ public class CUProfileA extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.a_cuprofile);
         preferences= new Preferences(getBaseContext());
+        if(preferences.isDark_theme_enabled())
+            setTheme(R.style.AppTheme_NoActionBar);
+        else
+            setTheme(R.style.AppThemeLight_NoActionBarLight);
+        setContentView(R.layout.a_cuprofile);
 
         Intent intent=getIntent();
         userInfo=intent.getStringArrayExtra("item");
         //set the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         CollapsingToolbarLayout collapsingToolbarLayout=findViewById(R.id.collapsingToolbar);
-        final Typeface tf= ResourcesCompat.getFont(this,R.font.amita);
-        collapsingToolbarLayout.setCollapsedTitleTypeface(tf);
-        collapsingToolbarLayout.setExpandedTitleTypeface(tf);
         setSupportActionBar(toolbar);
         setTitle("Profile");
 
@@ -77,12 +78,9 @@ public class CUProfileA extends AppCompatActivity
         final LinearLayout l_feedback_base=findViewById(R.id.feedback_base);
         if(!preferences.isDark_theme_enabled())
         {
-            setTheme(R.style.AppThemeLight_NoActionBarLight);
-            toolbar.setTitleTextColor(getResources().getColor(R.color.text_light));
-            toolbar.setPopupTheme(R.style.AppThemeLight_PopupOverlayLight);
-            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
-            appBarLayout.getContext().setTheme(R.style.AppThemeLight_AppBarOverlayLight);
-            appBarLayout.setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            collapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.text_light));
+            collapsingToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.text_light));
+            collapsingToolbarLayout.setBackgroundColor(getResources().getColor(R.color.main_background_light));
             findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.main_background_light));
             findViewById(R.id.sec_main).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
             ((TextView)findViewById(R.id.who)).setTextColor(getResources().getColor(R.color.text_light));
@@ -416,7 +414,10 @@ public class CUProfileA extends AppCompatActivity
             layout1.setOrientation(LinearLayout.HORIZONTAL);
             layout1.setWeightSum(10);
             layout1.setLayoutParams(layoutParams);
-            layout1.setBackgroundColor(tokens2[0].contentEquals("h")?ContextCompat.getColor(getBaseContext(),R.color.secondary_background):ContextCompat.getColor(getBaseContext(),R.color.tertiary_background));
+            if(preferences.isDark_theme_enabled())
+                layout1.setBackgroundColor(tokens2[0].contentEquals("h")?ContextCompat.getColor(getBaseContext(),R.color.secondary_background):ContextCompat.getColor(getBaseContext(),R.color.tertiary_background));
+            else
+                layout1.setBackgroundColor(tokens2[0].contentEquals("h")?ContextCompat.getColor(getBaseContext(),R.color.secondary_background_light):ContextCompat.getColor(getBaseContext(),R.color.tertiary_background_light));
             layout1.setPadding(10,15,10,15);
             layout1.setOnClickListener(new View.OnClickListener()
             {
@@ -445,7 +446,10 @@ public class CUProfileA extends AppCompatActivity
             String cert_name=tokens2[1];
             cert_name=cert_name.replace("_"," ");
             t_qual.setText(cert_name);
-            t_qual.setTextColor(ContextCompat.getColor(getBaseContext(),R.color.text));
+            if(preferences.isDark_theme_enabled())
+                t_qual.setTextColor(ContextCompat.getColor(getBaseContext(),R.color.text));
+            else
+                t_qual.setTextColor(ContextCompat.getColor(getBaseContext(),R.color.text_light));
             //certificate indicator
             LinearLayout.LayoutParams params=new LinearLayout.LayoutParams(5,10,1);
             TextView t_cert=new TextView(getBaseContext());
@@ -477,7 +481,10 @@ public class CUProfileA extends AppCompatActivity
             layout1.setOrientation(LinearLayout.HORIZONTAL);
             layout1.setWeightSum(10);
             layout1.setLayoutParams(layoutParams);
-            layout1.setBackgroundColor(ContextCompat.getColor(getBaseContext(),R.color.secondary_background));
+            if(preferences.isDark_theme_enabled())
+                layout1.setBackgroundColor(ContextCompat.getColor(getBaseContext(),R.color.secondary_background));
+            else
+                layout1.setBackgroundColor(ContextCompat.getColor(getBaseContext(),R.color.secondary_background_light));
             layout1.setPadding(10,15,10,15);
             layout1.setOnClickListener(new View.OnClickListener()
             {
@@ -496,7 +503,10 @@ public class CUProfileA extends AppCompatActivity
             t_equip.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,8));
             t_equip.setTypeface(font);
             t_equip.setText(data[2]);
-            t_equip.setTextColor(ContextCompat.getColor(getBaseContext(),R.color.text));
+            if(preferences.isDark_theme_enabled())
+                t_equip.setTextColor(ContextCompat.getColor(getBaseContext(),R.color.text));
+            else
+                t_equip.setTextColor(ContextCompat.getColor(getBaseContext(),R.color.text_light));
             //certificate indicator
             LinearLayout.LayoutParams params=new LinearLayout.LayoutParams(5,10,1);
             TextView t_cert=new TextView(getBaseContext());

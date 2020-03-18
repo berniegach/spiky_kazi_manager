@@ -15,6 +15,7 @@
       android:showDividers="middle">
 
     <LinearLayout
+        android:id="@+id/chart_back"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/secondary_background"

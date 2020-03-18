@@ -9,12 +9,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:divider="?android:listDivider"
-        android:dividerPadding="10dp"
-        android:showDividers="middle">
+        android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/chart_back"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/secondary_background"
@@ -33,7 +31,7 @@
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/chart"
                 android:layout_width="match_parent"
-                android:layout_height="250dp" />
+                android:layout_height="350dp" />
 
         </LinearLayout>
 
@@ -41,19 +39,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:orientation="vertical"
-            android:divider="?android:listDivider"
-            android:dividerPadding="10dp"
-            android:showDividers="middle">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:weightSum="2"
-                android:orientation="horizontal"
-                android:divider="?android:listDivider"
-                android:dividerPadding="10dp"
-                android:showDividers="middle">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:id="@+id/pending"
@@ -67,8 +59,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/text_margin"
-                        android:text="Pending"
-                        android:textColor="@color/text" />
+                        android:text="Pending" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -95,6 +86,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginStart="2dp"
                     android:background="@color/tertiary_background"
                     android:orientation="horizontal">
 
@@ -102,8 +94,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/text_margin"
-                        android:text="In Progress"
-                        android:textColor="@color/text" />
+                        android:text="In Progress" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -130,11 +121,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:weightSum="2"
-                android:orientation="horizontal"
-                android:divider="?android:listDivider"
-                android:dividerPadding="10dp"
-                android:showDividers="middle">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:id="@+id/overdue"
@@ -148,8 +137,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/text_margin"
-                        android:text="Overdue"
-                        android:textColor="@color/text" />
+                        android:text="Overdue" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -176,6 +164,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginStart="2dp"
                     android:background="@color/tertiary_background"
                     android:orientation="horizontal">
 
@@ -210,11 +199,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:weightSum="2"
-                android:orientation="horizontal"
-                android:divider="?android:listDivider"
-                android:dividerPadding="10dp"
-                android:showDividers="middle">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:id="@+id/unfinished"
@@ -228,8 +215,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/text_margin"
-                        android:text="Late"
-                        android:textColor="@color/text" />
+                        android:text="Late" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -256,6 +242,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:layout_marginStart="2dp"
                     android:background="@color/tertiary_background"
                     android:orientation="horizontal">
 
@@ -263,8 +250,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/text_margin"
-                        android:text="All"
-                        android:textColor="@color/text" />
+                        android:text="All" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"

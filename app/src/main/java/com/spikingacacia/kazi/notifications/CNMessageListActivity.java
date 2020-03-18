@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import java.util.List;
 
@@ -34,12 +36,14 @@ public class CNMessageListActivity extends AppCompatActivity
      */
     private boolean mTwoPane;
     private static Context context;
+    private Preferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_cnmessage_list);
+        preferences = new Preferences(getBaseContext());
 
         if (findViewById(R.id.message_detail_container) != null)
         {
@@ -53,6 +57,16 @@ public class CNMessageListActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Messages");
+        if(!preferences.isDark_theme_enabled())
+        {
+            setTheme(R.style.AppThemeLight_NoActionBarLight);
+            toolbar.setTitleTextColor(getResources().getColor(R.color.text_light));
+            toolbar.setPopupTheme(R.style.AppThemeLight_PopupOverlayLight);
+            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
+            appBarLayout.getContext().setTheme(R.style.AppThemeLight_AppBarOverlayLight);
+            appBarLayout.setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.main_background_light));
+        }
 
         RecyclerView recyclerView = findViewById(R.id.message_list);
         recyclerView.addItemDecoration(new DividerItemDecoration(getBaseContext(),DividerItemDecoration.VERTICAL));
@@ -74,6 +88,7 @@ public class CNMessageListActivity extends AppCompatActivity
         private final CNMessageListActivity mParentActivity;
         private final List<CNMessageContent.MessageItem> mValues;
         private final boolean mTwoPane;
+        private Preferences preferences;
         private final View.OnClickListener mOnClickListener = new View.OnClickListener()
         {
             @Override
@@ -117,6 +132,7 @@ public class CNMessageListActivity extends AppCompatActivity
         {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.cnmessage_list_content, parent, false);
+            preferences=new Preferences(context);
             return new ViewHolder(view);
         }
 
@@ -144,6 +160,10 @@ public class CNMessageListActivity extends AppCompatActivity
                     message=(mValues.get(position).message).substring(0,40)+"...";
                 else
                     message=mValues.get(position).message;
+            }
+            if(!preferences.isDark_theme_enabled())
+            {
+                holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.secondary_background_light));
             }
             holder.mPositionView.setText(mValues.get(position).position);
             holder.mMessageView.setText(message);

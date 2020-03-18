@@ -8,6 +8,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.util.Log;
+
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 
 public class CPerformanceA extends AppCompatActivity
@@ -18,14 +20,20 @@ CPUserReviewsF.OnListFragmentInteractionListener{
 
     private String fragmentWhich="overview";
     public static  String reviewer="manager";
+    private Preferences preferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_cperformance);
+        preferences = new Preferences(getBaseContext());
         //set actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Overview");
+        if(!preferences.isDark_theme_enabled())
+        {
+
+        }
         //set the first base fragment
         Fragment fragment=CPOverviewF.newInstance("","");
         FragmentTransaction transaction=getSupportFragmentManager().beginTransaction();

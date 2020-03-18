@@ -7,6 +7,9 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -19,10 +22,14 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.spikingacacia.kazi.CommonHelper;
 import com.spikingacacia.kazi.LoginActivity;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
+import com.spikingacacia.kazi.pie_chart;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -37,6 +44,8 @@ public class CRPNCDistF extends Fragment
     private Typeface font;
     private int selectorCounter;
     private String[] choices;
+    private Preferences preferences;
+    private PieChart chart;
 
 
     public static CRPNCDistF newInstance()
@@ -52,6 +61,7 @@ public class CRPNCDistF extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         selectorCounter=0;
         choices=new String[LoginActivity.tradesList.size()+1];
         choices[0]="All";
@@ -72,13 +82,14 @@ public class CRPNCDistF extends Fragment
     {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.f_crpnc_dist, container, false);
+        preferences=new Preferences(getContext());
         //main vertical layout
         layout=view.findViewById(R.id.quals_layout);
         //font
         font= ResourcesCompat.getFont(getContext(),R.font.arima_madurai);
         //chart
-        final PieChart chart=view.findViewById(R.id.chart);
-        setPieChart(chart);
+        chart=view.findViewById(R.id.chart);
+        pie_chart.init(chart,getContext());
         setNonComplianceCasesPie(chart);
         //selector textview
         final TextView selector=view.findViewById(R.id.selector);
@@ -119,51 +130,53 @@ public class CRPNCDistF extends Fragment
                 }
             }
         });
+        if(!preferences.isDark_theme_enabled())
+        {
+            view.findViewById(R.id.chart_back).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+        }
         return view;
     }
-    private void setPieChart(PieChart pieChart)
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
-        pieChart.setUsePercentValues(true);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.setExtraOffsets(5,10,5,5);
-        pieChart.setDragDecelerationFrictionCoef(0.95f);
-        pieChart.setDrawHoleEnabled(false);
-        //pieChart.setHoleColor(Color.TRANSPARENT);
-        pieChart.setTransparentCircleColor(Color.WHITE);
-        pieChart.setTransparentCircleAlpha(110);
-        //pieChart.setHoleRadius(95f);
-        pieChart.setRotationAngle(0);
-        pieChart.setRotationEnabled(true);
-        pieChart.setHighlightPerTapEnabled(true);
-        pieChart.setEntryLabelColor(Color.WHITE);
-        // pieChart.setEntryLabelTypeface(getResources().getFont(R.font.arima_madurai));
+        super.onCreateOptionsMenu(menu, inflater);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.pie, menu);
 
-        Legend legend=pieChart.getLegend();
-        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
-        legend.setDrawInside(false);
-        legend.setXEntrySpace(7f);
-        legend.setYEntrySpace(0f);
-        legend.setYOffset(0f);
-        legend.setTextSize(13);
-        legend.setTextColor(Color.WHITE);
-        legend.setTypeface(font);
-        //entry label
-        pieChart.setEntryLabelColor(Color.WHITE);
-        pieChart.setEntryLabelTypeface(font);
-        pieChart.setEntryLabelTextSize(12);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-        pieChart.invalidate();
+        switch (item.getItemId()) {
 
+            case R.id.actionToggleValues: {
+                for (IDataSet<?> set : chart.getData().getDataSets())
+                    set.setDrawValues(!set.isDrawValuesEnabled());
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+            }
+            case R.id.actionToggleHole: {
+                if (chart.isDrawHoleEnabled())
+                    chart.setDrawHoleEnabled(false);
+                else
+                    chart.setDrawHoleEnabled(true);
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+            }
+            case R.id.actionTogglePercent:
+                chart.setUsePercentValues(!chart.isUsePercentValuesEnabled());
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+        }
+        return true;
     }
     private void setNonComplianceCasesPie(PieChart pieChart)
     {
         List<PieEntry> entries=new ArrayList<>();
-        //colors
-        List<Integer>colors=new ArrayList<>();
-        List<Integer>tempColors=new ArrayList<>();
         //missing single case
         int sc=LoginActivity.cGlobalInfo.getUsersWithCase();
         //missing qualification and missing certificate
@@ -177,95 +190,33 @@ public class CRPNCDistF extends Fragment
         if(sc==0 && qc==0 && qec==0 && cec==0 && all==0)
         {
             entries.add(new PieEntry(1,"Empty"));
-            colors=ColorTemplate.createColors(getResources(),new int[]{R.color.graph_1});
         }
         else
         {
             if(sc>0)
             {
                 entries.add(new PieEntry(sc, "Single Case"));
-                tempColors.add(getColor(1 % 16));
             }
             if(qc>0)
             {
                 entries.add(new PieEntry(qc, "Missing Quals && Missing Certs"));
-                tempColors.add(getColor(4 % 16));
             }
             if(qec>0)
             {
                 entries.add(new PieEntry(qec, "Missing Quals && Expired Certs"));
-                tempColors.add(getColor(5 % 16));
             }
             if(cec>0)
             {
                 entries.add(new PieEntry(cec, "Missing && Expired Certs"));
-                tempColors.add(getColor(6 % 16));
             }
             if(all>0)
             {
                 entries.add(new PieEntry(all, "All Three"));
-                tempColors.add(getColor(7 % 16));
             }
-            int[]tempTempColors=new int[tempColors.size()];
-            for(int count=0; count<tempColors.size(); count+=1 )
-                tempTempColors[count]=tempColors.get(count);
-            colors=ColorTemplate.createColors(getResources(),tempTempColors);
+
         }
 
-        PieDataSet set=new PieDataSet(entries,"Cases");
-        set.setSliceSpace(0f);
-        //colors
-       // List<Integer>colors=ColorTemplate.createColors(getResources(),colorsRes);
-        set.setColors(colors);
-        PieData data=new PieData(set);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTypeface(font);
-        data.setValueFormatter(new PercentFormatter());
-        pieChart.setData(data);
-        pieChart.highlightValues(null);
-        pieChart.invalidate();
-
-    }
-    private int getColor(final int index)
-    {
-        switch(index)
-        {
-            case 0:
-                return R.color.graph_1;
-            case 1:
-                return R.color.graph_2;
-            case 2:
-                return R.color.graph_3;
-            case 3:
-                return R.color.graph_4;
-            case 4:
-                return R.color.graph_5;
-            case 5:
-                return R.color.graph_6;
-            case 6:
-                return R.color.graph_7;
-            case 7:
-                return R.color.graph_8;
-            case 8:
-                return R.color.graph_9;
-            case 9:
-                return R.color.graph_10;
-            case 10:
-                return R.color.graph_11;
-            case 11:
-                return R.color.graph_12;
-            case 12:
-                return R.color.graph_13;
-            case 13:
-                return R.color.graph_14;
-            case 14:
-                return R.color.graph_2;
-            case 15:
-                return R.color.graph_3;
-            default:
-                return R.color.graph_4;
-        }
-
+        pie_chart.add_data(entries,"Cases",chart);
     }
 
 }

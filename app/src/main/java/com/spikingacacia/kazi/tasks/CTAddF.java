@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.spikingacacia.kazi.JSONParser;
 import com.spikingacacia.kazi.LoginActivity;
 import com.spikingacacia.kazi.MapsActivity;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import com.spikingacacia.kazi.database.CTasks;
 
@@ -73,6 +74,7 @@ public class CTAddF extends Fragment
     private String geofence="g";
     private String dateAdded="";
     private String dateChanged="";
+    private Preferences preferences;
 
     private OnFragmentInteractionListener mListener;
 
@@ -108,6 +110,7 @@ public class CTAddF extends Fragment
     {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.f_ctadd, container, false);
+        preferences=new Preferences(getContext());
         Button add=view.findViewById(R.id.add_button);
         tTitle=view.findViewById(R.id.title);
         tDescription=view.findViewById(R.id.description);
@@ -287,6 +290,17 @@ public class CTAddF extends Fragment
                 index+=1;
             }
         }
+        if(!preferences.isDark_theme_enabled())
+        {
+            view.findViewById(R.id.scroll_view).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+            start_date.setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            start_time.setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            end_date.setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            end_time.setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            spinner.setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            tLocation.setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            position.setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+        }
         return view;
     }
     @Override
@@ -327,11 +341,11 @@ public class CTAddF extends Fragment
             tDescription.requestFocus();
             return;
         }
-        if(TextUtils.isEmpty(location) || location.length()<3)
+        /*if(TextUtils.isEmpty(location) || location.length()<3)
         {
             Toast.makeText(getContext(),"Please set the location",Toast.LENGTH_SHORT).show();
             return;
-        }
+        }*/
         if(TextUtils.isEmpty(mPosition[0]) || mPosition[0].length()<3)
         {
             Toast.makeText(getContext(),"Please set the position",Toast.LENGTH_SHORT).show();
@@ -575,6 +589,7 @@ public class CTAddF extends Fragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+
         if(requestCode==3 && resultCode==Activity.RESULT_OK )
         {
             location = data.getStringExtra("location");
@@ -583,8 +598,9 @@ public class CTAddF extends Fragment
             {
                 tLocation.setText(loc[2]);
             }
-            Log.d("LOCATION", "onacty2 "+location);
+            Log.d("LOCATION", "onacty2 data"+location);
         }
+        Log.d("LOCATION", "onacty2 fragment"+data.getDataString());
     }
     public class CreateTaskTask extends AsyncTask<Void, Void, Boolean>
     {

@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 /**
  * An activity representing a single Message detail screen. This
@@ -15,17 +17,28 @@ import com.spikingacacia.kazi.R;
  */
 public class CNMessageDetailActivity extends AppCompatActivity
 {
-
+    private Preferences preferences;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_cnmessage_detail);
+        preferences = new Preferences(getBaseContext());
 
         //toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Messages");
+        if(!preferences.isDark_theme_enabled())
+        {
+            setTheme(R.style.AppThemeLight_NoActionBarLight);
+            toolbar.setTitleTextColor(getResources().getColor(R.color.text_light));
+            toolbar.setPopupTheme(R.style.AppThemeLight_PopupOverlayLight);
+            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
+            appBarLayout.getContext().setTheme(R.style.AppThemeLight_AppBarOverlayLight);
+            appBarLayout.setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.main_background_light));
+        }
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity

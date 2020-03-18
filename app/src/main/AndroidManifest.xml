@@ -101,8 +101,7 @@
             android:name=".compliance.CCEquipmentsA"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".user.CUProfileA"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".user.CUProfileA" />
         <activity
             android:name=".reports.CRPReportsA"
             android:theme="@style/AppTheme.NoActionBar" />

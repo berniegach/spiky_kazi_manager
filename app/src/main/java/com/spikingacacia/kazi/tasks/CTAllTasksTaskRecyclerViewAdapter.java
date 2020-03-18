@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import com.spikingacacia.kazi.tasks.CTAllTasksF.OnListFragmentInteractionListener;
 import com.spikingacacia.kazi.tasks.CTAllTasksContent.Task;
@@ -28,6 +29,7 @@ public class CTAllTasksTaskRecyclerViewAdapter extends RecyclerView.Adapter<CTAl
     private final OnListFragmentInteractionListener mListener;
     private Context mContext;
     private  int mWhichTask=0;
+    private Preferences preferences;
 
     public CTAllTasksTaskRecyclerViewAdapter(List<Task> items, OnListFragmentInteractionListener listener,Context context, int whichTask)
     {
@@ -37,6 +39,8 @@ public class CTAllTasksTaskRecyclerViewAdapter extends RecyclerView.Adapter<CTAl
         itemsCopy.addAll(items);
         mContext=context;
         mWhichTask=whichTask;
+        //preference
+        preferences=new Preferences(context);
     }
 
     @Override
@@ -53,7 +57,10 @@ public class CTAllTasksTaskRecyclerViewAdapter extends RecyclerView.Adapter<CTAl
         holder.mItem = mValues.get(position);
         holder.countView.setText(mValues.get(position).count);
         holder.titleView.setText(mValues.get(position).title);
-
+        if(!preferences.isDark_theme_enabled())
+        {
+            holder.mView.setBackgroundColor(mContext.getResources().getColor(R.color.secondary_background_light));
+        }
         holder.mView.setOnClickListener(new View.OnClickListener()
         {
             @Override

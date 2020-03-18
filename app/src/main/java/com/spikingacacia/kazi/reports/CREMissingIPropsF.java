@@ -6,21 +6,32 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.res.ResourcesCompat;
+
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.spikingacacia.kazi.LoginActivity;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,7 +41,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CREMissingIPropsF extends Fragment
+public class CREMissingIPropsF extends Fragment implements OnChartValueSelectedListener
 {
     private LinearLayout layout;
     private Typeface font;
@@ -39,6 +50,8 @@ public class CREMissingIPropsF extends Fragment
     private int countQualsM=0;
     private int countQualsJ=0;
     private  int countT=0;
+    private Preferences preferences;
+    private PieChart chart;
 
 
     public static CREMissingIPropsF newInstance()
@@ -54,6 +67,7 @@ public class CREMissingIPropsF extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         selectorCounter=0;
         choices=new String[LoginActivity.tradesList.size()+1];
         choices[0]="All";
@@ -74,13 +88,14 @@ public class CREMissingIPropsF extends Fragment
     {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.f_cremissing_iprops, container, false);
+        preferences=new Preferences(getContext());
         //main vertical layout
         layout=view.findViewById(R.id.quals_layout);
         //font
         font= ResourcesCompat.getFont(getContext(),R.font.arima_madurai);
         getFieldsCounts();
         //chart
-        final PieChart chart=view.findViewById(R.id.chart);
+        chart=view.findViewById(R.id.chart);
         setPieChart(chart);
         setMissingPie(chart);
         //selector textview
@@ -120,61 +135,116 @@ public class CREMissingIPropsF extends Fragment
                 }
             }
         });
+        if(!preferences.isDark_theme_enabled())
+        {
+            view.findViewById(R.id.chart_back).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+        }
         return view;
     }
-    private void setPieChart(PieChart pieChart)
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
-        pieChart.setUsePercentValues(true);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.setExtraOffsets(5,10,5,5);
-        pieChart.setDragDecelerationFrictionCoef(0.95f);
-        pieChart.setDrawHoleEnabled(false);
-       // pieChart.setHoleColor(Color.TRANSPARENT);
-        pieChart.setTransparentCircleColor(Color.WHITE);
-        pieChart.setTransparentCircleAlpha(110);
-       // pieChart.setHoleRadius(95f);
-        pieChart.setRotationAngle(0);
-        pieChart.setRotationEnabled(true);
-        pieChart.setHighlightPerTapEnabled(true);
-        pieChart.setEntryLabelColor(Color.WHITE);
-        // pieChart.setEntryLabelTypeface(getResources().getFont(R.font.arima_madurai));
-
-        Legend legend=pieChart.getLegend();
-        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
-        legend.setDrawInside(false);
-        legend.setXEntrySpace(7f);
-        legend.setYEntrySpace(0f);
-        legend.setYOffset(0f);
-        legend.setTextSize(13);
-        legend.setTextColor(Color.WHITE);
-        legend.setTypeface(font);
-        //entry label
-        pieChart.setEntryLabelColor(Color.WHITE);
-        pieChart.setEntryLabelTypeface(font);
-        pieChart.setEntryLabelTextSize(12);
-
-
-        pieChart.invalidate();
+        super.onCreateOptionsMenu(menu, inflater);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.pie, menu);
 
     }
-    private void setMissingPie(PieChart pieChart, String tradeName)
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.actionToggleValues: {
+                for (IDataSet<?> set : chart.getData().getDataSets())
+                    set.setDrawValues(!set.isDrawValuesEnabled());
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+            }
+            case R.id.actionToggleHole: {
+                if (chart.isDrawHoleEnabled())
+                    chart.setDrawHoleEnabled(false);
+                else
+                    chart.setDrawHoleEnabled(true);
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+            }
+            case R.id.actionTogglePercent:
+                chart.setUsePercentValues(!chart.isUsePercentValuesEnabled());
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+        }
+        return true;
+    }
+    private void setPieChart(PieChart chart)
     {
+        if(preferences.isDark_theme_enabled())
+            chart.setBackgroundColor(Color.BLACK);
+        else
+            chart.setBackgroundColor(Color.WHITE);
+        chart.setUsePercentValues(true);
+        chart.getDescription().setEnabled(false);
+        chart.setExtraOffsets(5, 10, 5, 5);
+
+        chart.setDragDecelerationFrictionCoef(0.95f);
+
+        //chart.setCenterTextTypeface(tfLight);
+        // chart.setCenterText(generateCenterSpannableText());
+
+        chart.setDrawHoleEnabled(true);
+        chart.setHoleColor(Color.WHITE);
+
+        chart.setTransparentCircleColor(Color.WHITE);
+        chart.setTransparentCircleAlpha(110);
+
+        chart.setHoleRadius(58f);
+        chart.setTransparentCircleRadius(61f);
+
+        chart.setDrawCenterText(true);
+
+        chart.setRotationAngle(0);
+        // enable rotation of the chart by touch
+        chart.setRotationEnabled(true);
+        chart.setHighlightPerTapEnabled(true);
+
+        // chart.setUnit(" €");
+        // chart.setDrawUnitsInChart(true);
+
+        // add a selection listener
+        chart.setOnChartValueSelectedListener(this);
+
+        chart.animateY(1400, Easing.EaseInOutQuad);
+        // chart.spin(2000, 0, 360);
+
+        Legend l = chart.getLegend();
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        l.setOrientation(Legend.LegendOrientation.VERTICAL);
+        l.setDrawInside(false);
+        l.setXEntrySpace(7f);
+        l.setYEntrySpace(0f);
+        l.setYOffset(0f);
+
+        // entry label styling
+        if(preferences.isDark_theme_enabled())
+            chart.setEntryLabelColor(Color.WHITE);
+        else
+            chart.setEntryLabelColor(Color.BLACK);
+        //chart.setEntryLabelTypeface(tfRegular);
+        chart.setEntryLabelTextSize(12f);
 
     }
     private void setMissingPie(PieChart pieChart)
     {
         List<PieEntry> entries=new ArrayList<>();
-        //colors
-        List<Integer>colors=new ArrayList<>();
-        List<Integer>tempColors=new ArrayList<>();
         int[]missing=LoginActivity.cGlobalInfoEquips.getEachQualMissingCount();
         int count=2;
         if(LoginActivity.equipmentsColumnsList.size()==0 )
         {
             entries.add(new PieEntry(1,"Empty"));
-            colors=ColorTemplate.createColors(getResources(),new int[]{R.color.graph_1});
         }
         else
         {
@@ -191,30 +261,60 @@ public class CREMissingIPropsF extends Fragment
                     if(missing[count]>0)
                     {
                         entries.add(new PieEntry(missing[count], name));
-                        tempColors.add(getColor(count % 16));
                     }
                 }
 
                 count+=1;
             }
-            int[]tempTempColors=new int[tempColors.size()];
-            for(int c=0; c<tempColors.size(); c+=1 )
-                tempTempColors[c]=tempColors.get(c);
-            colors=ColorTemplate.createColors(getResources(),tempTempColors);
         }
 
-        PieDataSet set=new PieDataSet(entries,"Counts");
-        set.setSliceSpace(3f);
-        //colors
-        //List<Integer>colors=ColorTemplate.createColors(getResources(),colorsRes);
-        set.setColors(colors);
-        PieData data=new PieData(set);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTypeface(font);
-        data.setValueFormatter(new PercentFormatter());
-        pieChart.setData(data);
-        pieChart.highlightValues(null);
-        pieChart.invalidate();
+        // NOTE: The order of the entries when being added to the entries array determines their position around the center of
+        // the chart.
+
+        PieDataSet dataSet = new PieDataSet(entries, "Counts");
+
+        dataSet.setDrawIcons(false);
+
+        dataSet.setSliceSpace(0f);
+        //dataSet.setIconsOffset(new MPPointF(0, 40));
+        dataSet.setSelectionShift(5f);
+
+        // add a lot of colors
+
+        ArrayList<Integer> colors = new ArrayList<>();
+        for (int c : ColorTemplate.PASTEL_COLORS)
+            colors.add(c);
+        for (int c : ColorTemplate.VORDIPLOM_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.JOYFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.COLORFUL_COLORS)
+            colors.add(c);
+
+        for (int c : ColorTemplate.LIBERTY_COLORS)
+            colors.add(c);
+
+
+
+        colors.add(ColorTemplate.getHoloBlue());
+
+        dataSet.setColors(colors);
+        //dataSet.setSelectionShift(0f);
+
+        PieData data = new PieData(dataSet);
+        data.setValueFormatter(new PercentFormatter(chart));
+        data.setValueTextSize(11f);
+        //data.setValueTextColor(Color.BLUE);
+        //data.setValueTypeface(tfLight);
+        chart.setData(data);
+
+        // undo all highlights
+        chart.highlightValues(null);
+
+        chart.invalidate();
+
 
     }
     private void getFieldsCounts()
@@ -277,6 +377,20 @@ public class CREMissingIPropsF extends Fragment
                 return R.color.graph_4;
         }
 
+    }
+    @Override
+    public void onValueSelected(Entry e, Highlight h) {
+
+        if (e == null)
+            return;
+        Log.i("VAL SELECTED",
+                "Value: " + e.getY() + ", index: " + h.getX()
+                        + ", DataSet index: " + h.getDataSetIndex());
+    }
+
+    @Override
+    public void onNothingSelected() {
+        Log.i("PieChart", "nothing selected");
     }
 
 }

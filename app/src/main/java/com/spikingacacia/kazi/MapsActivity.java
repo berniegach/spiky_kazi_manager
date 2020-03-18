@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -75,10 +76,20 @@ public class MapsActivity extends FragmentActivity implements
         mFusedLocationClient= LocationServices.getFusedLocationProviderClient(this);
         mapView=mapFragment.getView();
         fab=mapView.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener()
+
+        final Handler handler = new Handler();
+        final Runnable runnable = new Runnable()
         {
             @Override
-            public void onClick(View v)
+            public void run()
+            {
+
+            }
+        };
+        final Thread thread=new Thread()
+        {
+            @Override
+            public void run()
             {
                 //get addresses
                 Geocoder geocoder=new Geocoder(MapsActivity.this, Locale.getDefault());
@@ -86,18 +97,47 @@ public class MapsActivity extends FragmentActivity implements
                 try
                 {
                     addresses=geocoder.getFromLocation(latMyPos.latitude,latMyPos.longitude,10);
-                    CSettingsActivity.settingsChanged = true;
-                    CSettingsActivity.tempContractorAccount.setLocation(String.format("%f,%f,%s",latMyPos.latitude,latMyPos.longitude,addresses.get(0).getLocality()));
+                    if(who!=3)
+                    {
+                        CSettingsActivity.settingsChanged = true;
+                        CSettingsActivity.tempContractorAccount.setLocation(String.format("%f,%f,%s",latMyPos.latitude,latMyPos.longitude,addresses.get(0).getLocality()));
+                    }
+
                     for(int c=0; c<addresses.size(); c+=1)
                         Log.d("loc: ",addresses.get(c).getLocality()+"\n");
-                    fab.hide();
+                    final String locality=addresses.get(0).getLocality();
+                    runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            fab.hide();
+                            //if we have been called from the CTAddF.java, return the location
+                            if(who==3)
+                            {
+                                Intent intent=new Intent();
+                                intent.putExtra("location",latMyPos.latitude+","+latMyPos.longitude+","+locality);
+                                setResult(3,intent);
+                                finish();//finishing activity
+                            }
+                        }
+                    });
                 }
                 catch (IOException e)
                 {
                     Log.e("address",""+e.getMessage());
                 }
             }
+        };
+        fab.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                thread.start();
+            }
         });
+
 
     }
 

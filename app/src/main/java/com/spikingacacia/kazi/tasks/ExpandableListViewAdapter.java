@@ -8,12 +8,15 @@ import android.widget.TextView;
 import android.widget.BaseExpandableListAdapter;
 
 
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 
 import java.util.List;
 
 public class ExpandableListViewAdapter extends BaseExpandableListAdapter
     {
+        private Preferences preferences;
+        private Context context;
         private static final class ViewHolder
         {
             TextView textLabel;
@@ -24,6 +27,8 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter
         {
             this.inflater=LayoutInflater.from(context);
             this.itemList=itemList;
+            this.context=context;
+            preferences=new Preferences(context);
         }
         @Override
         public int getGroupCount()
@@ -78,6 +83,8 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter
                 holder=new ViewHolder();
                 holder.textLabel=(TextView)resultView.findViewById(R.id.itemsTitle);//TODO change view id
                 resultView.setTag(holder);
+                if(!preferences.isDark_theme_enabled())
+                    resultView.setBackgroundColor(context.getResources().getColor(R.color.tertiary_background_light));
             }
             else
             {
@@ -99,6 +106,8 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter
                 holder=new ViewHolder();
                 holder.textLabel=(TextView)resultView.findViewById(R.id.item);//TODO change view id
                 resultView.setTag(holder);
+                if(!preferences.isDark_theme_enabled())
+                    resultView.setBackgroundColor(context.getResources().getColor(R.color.tertiary_background_light));
             }
             else
             {
