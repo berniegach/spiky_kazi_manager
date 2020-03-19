@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import com.spikingacacia.kazi.performance.CPReviewsF.OnListFragmentInteractionListener;
 import com.spikingacacia.kazi.performance.CPReviewsContent.ReviewItem;
@@ -29,6 +30,7 @@ public class CPReviewsRecyclerViewAdapter extends RecyclerView.Adapter<CPReviews
     private List<ReviewItem>itemsCopy;
     private Context mContext;
     private  int mWhichReview=0;
+    private Preferences preferences;
 
     public CPReviewsRecyclerViewAdapter(List<ReviewItem> items, OnListFragmentInteractionListener listener, Context context, int whichReview) {
         mValues = items;
@@ -37,6 +39,7 @@ public class CPReviewsRecyclerViewAdapter extends RecyclerView.Adapter<CPReviews
         itemsCopy.addAll(items);
         mContext=context;
         mWhichReview=whichReview;
+        preferences = new Preferences(context);
     }
 
     @Override
@@ -48,6 +51,10 @@ public class CPReviewsRecyclerViewAdapter extends RecyclerView.Adapter<CPReviews
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+        if(!preferences.isDark_theme_enabled())
+        {
+            holder.mView.setBackgroundColor(mContext.getResources().getColor(R.color.secondary_background_light));
+        }
         holder.mItem = mValues.get(position);
         holder.mCountView.setText(mValues.get(position).count);
         holder.mNamesView.setText(mValues.get(position).names);

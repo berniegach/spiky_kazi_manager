@@ -1,5 +1,7 @@
 package com.spikingacacia.kazi.tasks;
 
+import android.util.Log;
+
 import com.spikingacacia.kazi.LoginActivity;
 import com.spikingacacia.kazi.database.CTasks;
 
@@ -20,7 +22,6 @@ public class CTAllTasksContent
     public final List<Task> ITEMS = new ArrayList<Task>();
     public final Map<String, Task> ITEM_MAP = new HashMap<String, Task>();
     private  int mWhichTask=0;
-
     public CTAllTasksContent(int whichTask)
     {
         mWhichTask=whichTask;

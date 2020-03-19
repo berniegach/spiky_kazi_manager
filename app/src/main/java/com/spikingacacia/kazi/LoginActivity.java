@@ -71,10 +71,9 @@ CreateAccountF.OnFragmentInteractionListener,
 {
     private static final int OVERLAY_PERMISSION_CODE=543;
     //REMEMBER TO CHANGE THIS WHEN CHANGING BETWEEN ONLINE AND LOCALHOST
-    //public static final String base_url="https://www.spikingacacia.com/kazi_project/android/"; //online
-    public static final String base_url="http://10.0.2.2/kazi_project/android/"; //localhost no connection for testing user accounts coz it doesnt require subscription checking
-    //public static final String base_url="http://192.168.0.10/kazi_project/android/"; //localhost
-    //public static final String base_url="http://192.168.43.228/kazi_project/android/"; //localhost tablet
+    public static final String base_url="https://www.spikingacacia.com/kazi_project/android/"; //online
+    //public static final String base_url="http://10.0.2.2/kazi_project/android/"; //localhost no connection for testing user accounts coz it doesnt require subscription checking
+
     private String TAG_SUCCESS="success";
     private String TAG_MESSAGE="message";
     private String TAG="LoginActivity";

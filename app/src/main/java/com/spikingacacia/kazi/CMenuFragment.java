@@ -332,7 +332,7 @@ public class CMenuFragment extends Fragment
     private int getTasksCount()
     {
         int count=0;
-        Iterator<CTasks> iterator=LoginActivity.cTasksList.iterator();
+        Iterator<CTasks> iterator=cTasksList.iterator();
         while(iterator.hasNext())
         {
             CTasks cTasks = iterator.next();

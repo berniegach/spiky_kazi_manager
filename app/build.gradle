@@ -6,8 +6,8 @@ android {
         applicationId "com.spikingacacia.kazi"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 22
-        versionName "1.2.0"
+        versionCode 24
+        versionName "1.2.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

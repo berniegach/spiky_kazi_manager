@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Kazi Manager</string>
-    <string name="app_version">Version 1.2.0</string>
+    <string name="app_version">Version 1.2.2</string>
     <string name="copyright">\u00A9 2020 Spiking Acacia</string>
 
     <!-- Strings related to login -->
@@ -84,7 +84,7 @@
     <string name="u_b_3">Equipments</string>
     <string name="u_b_8_a">Follow the procedure shown above but now for the equipments</string>
 
-    <string name="u_b_end">\u20de That\'s it, your account is now set, all that remains is for your employees to fill in their information using the Spiky Kazi Employee app</string>
+    <string name="u_b_end">\u20de That\'s it, your account is now set, all that remains is for your employees to fill in their information using the Kazi Employee app</string>
     <!--subscriptions-->
     <string name="content_description_app_loading_image">App loading image</string>
     <string name="button_purchase">Purchase</string>

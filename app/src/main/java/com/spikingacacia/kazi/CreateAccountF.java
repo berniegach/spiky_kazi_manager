@@ -61,7 +61,7 @@ public class CreateAccountF extends Fragment {
 
     private int persona=0;
     JSONParser jsonParser;
-    Preferences preferences;
+    private Preferences preferences;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */

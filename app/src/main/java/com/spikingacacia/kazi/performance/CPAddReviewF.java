@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputLayout;
 import com.spikingacacia.kazi.JSONParser;
 import com.spikingacacia.kazi.LoginActivity;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import com.spikingacacia.kazi.database.CReviews;
 
@@ -65,6 +66,7 @@ public class CPAddReviewF extends Fragment {
     private RatingBar rating_bar;
     private int reviewIndex;
     private int reviewId;
+    private Preferences preferences;
 
     public CPAddReviewF() {
         // Required empty public constructor
@@ -93,6 +95,7 @@ public class CPAddReviewF extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view= inflater.inflate(R.layout.f_cpadd_review, container, false);
+        preferences = new Preferences(getContext());
         t_reviewer=view.findViewById(R.id.reviewer);
         e_review=view.findViewById(R.id.review);
         e_to_improve=view.findViewById(R.id.to_improve);
@@ -110,6 +113,11 @@ public class CPAddReviewF extends Fragment {
                 onUpdateClicked();
             }
         });
+        if(!preferences.isDark_theme_enabled())
+        {
+            view.findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+        }
+
         return view;
     }
     @Override

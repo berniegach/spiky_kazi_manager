@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 
 /**
@@ -27,6 +28,7 @@ public class CPReviewDetailF extends Fragment {
     private String mReviewer;
     private int mRating;
     private String mDate;
+    private Preferences preferences;
 
     public CPReviewDetailF() {
         // Required empty public constructor
@@ -61,11 +63,18 @@ public class CPReviewDetailF extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.f_cpreview_detail, container, false);
+        preferences = new Preferences(getContext());
         ((TextView)view.findViewById(R.id.review)).setText(mReview);
         ((TextView)view.findViewById(R.id.to_improve)).setText(mToImprove);
         ((TextView)view.findViewById(R.id.reviewer)).setText("By " +mReviewer+" "+mDate);
         ((RatingBar)view.findViewById(R.id.rating_bar)).setRating(mRating);
         ((TextView)view.findViewById(R.id.rating)).setText(String.format("%d/5",mRating));
+        if(!preferences.isDark_theme_enabled())
+        {
+            view.findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.secondary_background_light));
+            view.findViewById(R.id.review).setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            view.findViewById(R.id.to_improve).setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+        }
         return view;
     }
 

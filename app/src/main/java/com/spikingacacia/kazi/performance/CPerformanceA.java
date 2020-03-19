@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 
@@ -32,7 +33,13 @@ CPUserReviewsF.OnListFragmentInteractionListener{
         setTitle("Overview");
         if(!preferences.isDark_theme_enabled())
         {
-
+            setTheme(R.style.AppThemeLight_NoActionBarLight);
+            toolbar.setTitleTextColor(getResources().getColor(R.color.text_light));
+            toolbar.setPopupTheme(R.style.AppThemeLight_PopupOverlayLight);
+            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
+            appBarLayout.getContext().setTheme(R.style.AppThemeLight_AppBarOverlayLight);
+            appBarLayout.setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            findViewById(R.id.main).setBackgroundColor(getResources().getColor(R.color.main_background_light));
         }
         //set the first base fragment
         Fragment fragment=CPOverviewF.newInstance("","");

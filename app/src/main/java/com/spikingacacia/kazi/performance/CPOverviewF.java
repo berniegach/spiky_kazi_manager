@@ -13,6 +13,9 @@ import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -29,11 +32,14 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.DefaultValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.spikingacacia.kazi.JSONParser;
 import com.spikingacacia.kazi.LoginActivity;
+import com.spikingacacia.kazi.Preferences;
 import com.spikingacacia.kazi.R;
 import com.spikingacacia.kazi.database.CReviews;
+import com.spikingacacia.kazi.pie_chart;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -68,7 +74,6 @@ public class CPOverviewF extends Fragment {
     private static JSONParser jsonParser;
     private static String TAG_SUCCESS="success";
     private static String TAG_MESSAGE="message";
-    private Typeface font;
     private PieChart chart;
     private TextView t_p_count;
     private TextView t_a_count;
@@ -81,20 +86,12 @@ public class CPOverviewF extends Fragment {
     private Spinner spinner;
     private int spinnerSelection=0;
     private  boolean justStarted;
+    private Preferences preferences;
 
     public CPOverviewF() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CPOverviewF.
-     */
-    // TODO: Rename and change types and number of parameters
     public static CPOverviewF newInstance(String param1, String param2) {
         CPOverviewF fragment = new CPOverviewF();
         Bundle args = new Bundle();
@@ -107,6 +104,7 @@ public class CPOverviewF extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -123,6 +121,7 @@ public class CPOverviewF extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.f_cpoverview, container, false);
+        preferences = new Preferences(getContext());
         jsonParser=new JSONParser();
         chart=view.findViewById(R.id.chart);
         t_p_count=view.findViewById(R.id.p_count);
@@ -183,11 +182,53 @@ public class CPOverviewF extends Fragment {
                     mListener.onLayoutClicked(2);
             }
         });
-        //font
-        font= ResourcesCompat.getFont(getContext(),R.font.arima_madurai);
+        if(!preferences.isDark_theme_enabled())
+        {
+            view.findViewById(R.id.chart_back).setBackgroundColor(getResources().getColor(R.color.main_background_light));
+            view.findViewById(R.id.pending).setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+            view.findViewById(R.id.all).setBackgroundColor(getResources().getColor(R.color.tertiary_background_light));
+        }
+
         return view;
     }
-    
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        super.onCreateOptionsMenu(menu, inflater);
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.pie, menu);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.actionToggleValues: {
+                for (IDataSet<?> set : chart.getData().getDataSets())
+                    set.setDrawValues(!set.isDrawValuesEnabled());
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+            }
+            case R.id.actionToggleHole: {
+                if (chart.isDrawHoleEnabled())
+                    chart.setDrawHoleEnabled(false);
+                else
+                    chart.setDrawHoleEnabled(true);
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+            }
+            case R.id.actionTogglePercent:
+                chart.setUsePercentValues(!chart.isUsePercentValuesEnabled());
+                item.setChecked(!item.isChecked());
+                chart.invalidate();
+                break;
+        }
+        return true;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -212,7 +253,7 @@ public class CPOverviewF extends Fragment {
         all=0;
         rating=0;
         setReviewsCount();
-        setPieChart(chart);
+        pie_chart.init(chart,getContext());
         setRatingPie(chart);
         spinner.setSelection(spinnerSelection);
     }
@@ -220,72 +261,15 @@ public class CPOverviewF extends Fragment {
     public interface OnFragmentInteractionListener {
         void onLayoutClicked(int id);
     }
-    private void setPieChart(PieChart pieChart)
-    {
-        //pieChart.setUsePercentValues(true);
-        pieChart.getDescription().setEnabled(false);
-        pieChart.setExtraOffsets(5,10,5,5);
-        pieChart.setDragDecelerationFrictionCoef(0.95f);
-        pieChart.setDrawHoleEnabled(false);
-        // pieChart.setHoleColor(Color.TRANSPARENT);
-        pieChart.setTransparentCircleColor(Color.WHITE);
-        pieChart.setTransparentCircleAlpha(110);
-        //pieChart.setHoleRadius(95f);
-        pieChart.setRotationAngle(-90);
-        pieChart.setRotationEnabled(false);
-        pieChart.setHighlightPerTapEnabled(true);
-        pieChart.setEntryLabelColor(Color.WHITE);
-        // pieChart.setEntryLabelTypeface(getResources().getFont(R.font.arima_madurai));
 
-        Legend legend=pieChart.getLegend();
-        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
-        legend.setDrawInside(false);
-        legend.setXEntrySpace(7f);
-        legend.setYEntrySpace(0f);
-        legend.setYOffset(0f);
-        legend.setTextSize(13);
-        legend.setTextColor(Color.WHITE);
-        legend.setTypeface(font);
-        //entry label
-        pieChart.setEntryLabelColor(Color.WHITE);
-        pieChart.setEntryLabelTypeface(font);
-        pieChart.setEntryLabelTextSize(12);
-
-
-        pieChart.invalidate();
-
-    }
     private void setRatingPie(PieChart pieChart)
     {
         List<PieEntry> entries=new ArrayList<>();
-        //colors
-        List<Integer>colors=new ArrayList<>();
-        List<Integer>tempColors=new ArrayList<>();
         //all
         entries.add(new PieEntry(rating));
-        tempColors.add(R.color.graph_13);
         entries.add(new PieEntry(5-rating));
-        tempColors.add(R.color.button_normal);
-        int[]tempTempColors=new int[tempColors.size()];
-        for(int count=0; count<tempColors.size(); count+=1 )
-            tempTempColors[count]=tempColors.get(count);
-        colors= ColorTemplate.createColors(getResources(),tempTempColors);
 
-
-        PieDataSet set=new PieDataSet(entries,"Average Rating");
-        set.setSliceSpace(0f);
-        //colors
-        set.setColors(colors);
-        PieData data=new PieData(set);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueTypeface(font);
-        //data.setValueFormatter(new PercentFormatter());
-        data.setValueFormatter(new DefaultValueFormatter(1));
-        pieChart.setData(data);
-        pieChart.highlightValues(null);
-        pieChart.invalidate();
+        pie_chart.add_data(entries,"Average Rating",chart);
     }
 
     private void setReviewsCount()

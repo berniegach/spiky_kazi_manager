@@ -77,7 +77,7 @@ public class CSettingsActivity extends AppCompatActivity
     public static ContractorAccount tempContractorAccount;
     public static String permissions;
     public static Bitmap profilePic;
-    Preferences preferences;
+    private Preferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
