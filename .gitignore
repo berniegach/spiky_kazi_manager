@@ -7,3 +7,20 @@
 /build
 /captures
 .externalNativeBuild
+# Android signing / secrets
+*.jks
+*.keystore
+key.properties
+keystore.properties
+
+# Firebase / Google config
+google-services.json
+
+# Release artifacts
+*.apk
+*.aab
+app/release/
+past_releases/
+
+# IDE metadata
+.idea/
